@@ -109,10 +109,12 @@ ts
 onClick(event: MouseEvent) {
   event.preventDefault();
 }
+<pre><code>
 <b>
 适用场景
 组件内部逻辑
 </b>
+ </code></pre>
 Shared UI 组件（AppButton）
 
 需要同时阻止冒泡、阻止默认行为
