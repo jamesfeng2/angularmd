@@ -83,7 +83,7 @@ UI 卡顿
 
  
 
-## Angular 里一共有 5 种方式可以阻止默认行为（preventDefault）。
+## Angular 里一共有 5 种方式可以阻止默认行为（preventDefault）in HTML or TS
 ```
 而且每一种都有不同的使用场景。
 我会按从“最常用”到“最底层”排序，让你一眼就能选对。
@@ -109,12 +109,10 @@ ts
 onClick(event: MouseEvent) {
   event.preventDefault();
 }
-<pre><code>
-<b>
+ 
 适用场景
 组件内部逻辑
-</b>
- </code></pre>
+ 
 Shared UI 组件（AppButton）
 
 需要同时阻止冒泡、阻止默认行为
@@ -192,8 +190,175 @@ onDocClick(event: MouseEvent) {
 适用场景
 全局事件控制
 
-Modal、Dropdown、Overlay
+用于 Modal、Dropdown、Overlay 等全局交互
 
-点击外部关闭逻辑
+监听 document 级别事件 但它们不是默认捕获阶段 
+监听整个网页的事件，然后组件内部决定要不要处理
+
+Angular 的 HostListener 默认监听的是冒泡阶段（bubble phase）
+
+onEsc() 用的是 @HostListener('document:keydown.escape')，
+onDocClick() 用 @HostListener('document:click')
+
+默认情况下：
+
+浏览器事件顺序是：
+捕获 → 目标 → 冒泡
+
+Angular 默认监听 冒泡阶段。
+
+但你可以让 Angular 监听 捕获阶段：
+
+ts
+@HostListener('document:click.capture', ['$event'])
+onDocClick(event: MouseEvent) {
+  event.preventDefault();
+}
+注意 .capture：
+
+.capture = 捕获阶段
+
+.passive = 被动监听
+
+.once = 只触发一次
+
+这是 Angular 的高级 HostListener 特性。
+
+```
+
+
+## 🟦 HostListener 的 7 大高级用法（完整版）
+```
+
+1) 监听 DOM 事件（基础但最常用）
+ts
+@HostListener('click', ['$event'])
+onClick(event: MouseEvent) { ... }
+监听组件本身的事件
+
+$event 是原生事件对象
+
+AppButton ripple 就是用这个
+
+2) 监听 document 事件（全局事件）
+ts
+@HostListener('document:keydown.escape')
+onEsc() { ... }
+不管焦点在哪
+
+ESC 一按就触发
+
+Modal、Dropdown、Overlay 必备
+
+3) 监听 window 事件（窗口级别）
+ts
+@HostListener('window:resize', ['$event'])
+onResize(event: UIEvent) { ... }
+响应式布局
+
+监听滚动、大小变化
+
+图表、布局组件常用
+
+4) 使用事件修饰符（capture / passive / once）——真正高级
+Angular 支持：
+
+✔ 捕获阶段（事件最早触发）
+ts
+@HostListener('document:click.capture', ['$event'])
+onDocClick(event: MouseEvent) { ... }
+用途：
+
+Modal loading 时锁定全局点击
+
+阻止外部库事件
+
+阻止所有点击（安全模式）
+
+✔ passive（告诉浏览器“我不会阻止默认行为”）
+ts
+@HostListener('window:scroll.passive', ['$event'])
+onScroll(event: Event) { ... }
+用途：
+
+性能优化（scroll/touch）
+
+避免浏览器警告
+
+✔ once（只触发一次）
+ts
+@HostListener('document:click.once', ['$event'])
+onFirstClick(event: MouseEvent) { ... }
+用途：
+
+第一次点击触发某个逻辑
+
+新手引导（onboarding）
+
+只监听一次的事件
+
+5) 同时监听多个事件（多 HostListener）
+ts
+@HostListener('window:resize')
+@HostListener('window:orientationchange')
+onLayoutChange() { ... }
+用途：
+
+移动端布局
+
+图表自适应
+
+Modal/Drawer 自适应
+
+6) 监听自定义事件（组件内部 dispatchEvent）
+ts
+@HostListener('myCustomEvent', ['$event'])
+onCustom(e: CustomEvent) { ... }
+配合：
+
+ts
+this.el.nativeElement.dispatchEvent(new CustomEvent('myCustomEvent'));
+用途：
+
+自定义组件内部通信
+
+指令与组件交互
+
+7) 阻止默认行为 + 阻止冒泡（企业级组件必备）
+AppButton 的黄金写法：
+
+ts
+@HostListener('click', ['$event'])
+onClick(event: MouseEvent) {
+  if (this.disabled || this.loading) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    return;
+  }
+
+  this.createRipple(event);
+  this.clicked.emit(event);
+}
+用途：
+
+防止重复提交
+
+防止 loading 时点击
+
+ripple 不被打断
+
+业务逻辑安全
+
+🟦 HostListener 所有语法（完整版表格）
+写法	说明	场景
+'click'	监听组件自身事件	AppButton
+'document:click'	监听全局事件	Modal、Dropdown
+'window:resize'	监听窗口事件	响应式布局
+'document:click.capture'	捕获阶段	全局点击锁定
+'window:scroll.passive'	被动监听	性能优化
+'document:keydown.escape'	ESC 关闭	Modal
+'document:click.once'	只触发一次	Onboarding
+'myEvent'	自定义事件	指令/组件通信
+
 
 ```
