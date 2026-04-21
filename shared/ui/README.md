@@ -2,11 +2,11 @@ Shared UI 的核心原则（文档重点）
 1) Shared UI = 可复用的纯展示组件
 例如：
 
-Button
+- Button
 
-Card
+- Card
 
-Table
+- Table
 
 Modal
 
@@ -22,7 +22,7 @@ Avatar
 
 不包含业务逻辑
 
-不依赖任何 domain
+不依赖任何 domain 
 
 不依赖任何 service
 
@@ -43,7 +43,7 @@ Avatar
 
 不属于 products
 
-不属于任何 domain
+`不属于任何 domain`
 
 它们是“跨 domain 通用的 UI 积木”。
 
@@ -51,15 +51,15 @@ Avatar
 ❌ 错误示例：
 
 Code
-<customer-card [customer]="customer"></customer-card>
+`<customer-card [customer]="customer"></customer-card>`
 这种组件属于 customers domain，不能放 shared。
 
 Shared UI 只能是：
 
 Code
-<app-card>
+`<app-card>
 <app-table>
-<app-button>
+<app-button>`
 4) Shared UI 不能依赖 Data 层或 Feature 层
 ❌ 错误：
 
@@ -71,22 +71,22 @@ ts
 this.store.loadCustomers();
 Shared UI 必须是：
 
-无 service
+- 无 service
 
-无 store
+- 无 store
 
-无 API
+- 无 API
 
-无业务逻辑
+- 无业务逻辑
 
 5) Shared UI 必须是“可组合的”
 例如：
 
-Table + Pagination
+- Table + Pagination
 
-Card + Header + Footer
+- Card + Header + Footer
 
-Modal + Content + Actions
+- Modal + Content + Actions
 
 Shared UI 的目标是：
 
