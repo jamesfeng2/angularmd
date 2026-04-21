@@ -80,3 +80,118 @@ UI 卡顿
 这样按钮才稳、好用、不会出 bug
 
 ```
+
+ 
+
+## Angular 里一共有 5 种方式可以阻止默认行为（preventDefault）。
+```
+而且每一种都有不同的使用场景。
+我会按从“最常用”到“最底层”排序，让你一眼就能选对。
+
+🟦 方式 1：在模板里直接用 $event.preventDefault()（最常用）
+html
+<button (click)="onClick($event); $event.preventDefault()">
+  Save
+</button>
+或更简洁：
+
+html
+<button (click)="$event.preventDefault()">
+适用场景
+简单阻止默认行为
+
+不需要复杂逻辑
+
+不需要在 TS 里处理
+
+🟦 方式 2：在组件方法里调用 event.preventDefault()（最标准）
+ts
+onClick(event: MouseEvent) {
+  event.preventDefault();
+}
+<b>
+适用场景
+组件内部逻辑
+</b>
+Shared UI 组件（AppButton）
+
+需要同时阻止冒泡、阻止默认行为
+
+🟦 方式 3：使用 @HostListener 捕获事件并阻止默认行为（企业级组件常用）
+ts
+@HostListener('click', ['$event'])
+onHostClick(event: MouseEvent) {
+  event.preventDefault();
+}
+适用场景
+自定义组件（AppButton、AppModal）
+
+指令（Directive）
+
+不想在模板写 (click)
+
+想封装内部行为（ripple、loading、disabled）
+
+这是你 AppButton 用的方式。
+
+🟦 方式 4：在模板里使用 Angular 的 $event 修饰符（最简洁）
+Angular 支持：
+
+html
+<form (submit)="onSubmit(); $event.preventDefault()">
+但 Angular 没有 Vue 那种 .prevent 修饰符，
+所以必须写 $event.preventDefault()。
+
+适用场景
+表单 submit
+
+链接 click
+
+简单阻止默认行为
+
+🟦 方式 5：使用 return false（老方法，不推荐，但仍然有效）
+html
+<button (click)="onClick(); return false">
+Angular 会把 return false 视为：
+
+event.preventDefault()
+
+event.stopPropagation()
+
+适用场景
+兼容旧代码
+
+快速阻止所有行为
+
+但不推荐在新项目使用。
+
+🟦 方式 6：在指令中使用 Renderer2（底层方式）
+ts
+constructor(private renderer: Renderer2, private el: ElementRef) {
+  this.renderer.listen(this.el.nativeElement, 'click', (event) => {
+    event.preventDefault();
+  });
+}
+适用场景
+自定义指令
+
+需要在运行时动态绑定事件
+
+需要兼容 SSR / WebWorker
+
+🟦 方式 7：使用事件捕获阶段阻止默认行为（高级场景）
+ts
+@HostListener('document:click', ['$event'])
+onDocClick(event: MouseEvent) {
+  if (shouldBlock(event)) {
+    event.preventDefault();
+  }
+}
+适用场景
+全局事件控制
+
+Modal、Dropdown、Overlay
+
+点击外部关闭逻辑
+
+```
