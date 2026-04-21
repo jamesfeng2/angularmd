@@ -10,6 +10,8 @@ export type ButtonVariant =
   | 'text'
   | 'outline';
 
+export type ButtonSize = 'sm' | 'md' | 'lg';
+
 @Component({
   selector: 'app-button',
   template: `

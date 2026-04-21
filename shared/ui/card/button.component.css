@@ -1,0 +1,45 @@
+.app-button {
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  height: 36px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.app-button.full-width {
+  width: 100%;
+}
+
+.app-button.loading {
+  cursor: wait;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Variants */
+.primary { background: #1976d2; color: white; }
+.secondary { background: #e0e0e0; color: #333; }
+.danger { background: #d32f2f; color: white; }
+.text { background: transparent; color: #1976d2; }
+.outline { background: transparent; border: 1px solid #1976d2; color: #1976d2; }
+
+/* Sizes */
+.sm { height: 28px; font-size: 12px; padding: 0 12px; }
+.md { height: 36px; font-size: 14px; padding: 0 16px; }
+.lg { height: 44px; font-size: 16px; padding: 0 20px; }

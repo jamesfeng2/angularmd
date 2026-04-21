@@ -1,4 +1,5 @@
 Shared UI 的核心原则（文档重点）
+`如果父组件不传值，@Input() 就是 undefined。`
 1) Shared UI = 可复用的纯展示组件
 例如：
 
