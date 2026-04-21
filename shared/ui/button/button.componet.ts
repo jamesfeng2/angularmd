@@ -28,7 +28,18 @@ export class AppButtonComponent {
 
   @Output() clicked = new EventEmitter<void>();
 }
+`
+uage:
 
+<app-card>
+  <div header>客户列表</div>
+
+  <app-button (clicked)="reload()">刷新</app-button>
+
+  <div footer>共 {{ total }} 条</div>
+</app-card>
+
+`
 `
 为什么它是“纯展示组件”？
 没有 service
