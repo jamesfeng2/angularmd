@@ -1,0 +1,33 @@
+:root {
+  --btn-primary-bg: #1976d2;
+  --btn-primary-text: #ffffff;
+
+  --btn-secondary-bg: #e0e0e0;
+  --btn-secondary-text: #333;
+
+  --btn-danger-bg: #d32f2f;
+  --btn-danger-text: #fff;
+
+  --btn-hover-opacity: 0.1;
+
+  --ripple-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Dark Theme */
+:root[data-theme="dark"] {
+  --btn-primary-bg: #90caf9;
+  --btn-primary-text: #000;
+
+  --btn-secondary-bg: #555;
+  --btn-secondary-text: #eee;
+
+  --btn-danger-bg: #ef9a9a;
+  --btn-danger-text: #000;
+
+  --ripple-color: rgba(0, 0, 0, 0.4);
+}
+
+
+// usage document.documentElement.setAttribute('data-theme', 'dark');
+// <app-button variant="primary">Save</app-button>
+

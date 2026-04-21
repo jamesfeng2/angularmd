@@ -1,0 +1,32 @@
+<button
+  class="app-button"
+  [ngClass]="[
+    variant,
+    size,
+    fullWidth ? 'full-width' : '',
+    iconOnly ? 'icon-only' : ''
+  ]"
+  [disabled]="disabled || loading"
+  (click)="onClick($event)"
+>
+  <!-- Ripple container -->
+  <span class="ripple-container"></span>
+
+  <!-- Loading -->
+  <span class="spinner" *ngIf="loading"></span>
+
+  <!-- Icon Left -->
+  <span class="icon left" *ngIf="iconLeft && !loading">
+    <i [class]="iconLeft"></i>
+  </span>
+
+  <!-- Label -->
+  <span class="label" *ngIf="!iconOnly">
+    <ng-content></ng-content>
+  </span>
+
+  <!-- Icon Right -->
+  <span class="icon right" *ngIf="iconRight && !loading">
+    <i [class]="iconRight"></i>
+  </span>
+</button>
