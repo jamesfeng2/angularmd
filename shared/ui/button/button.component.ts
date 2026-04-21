@@ -5,10 +5,10 @@ import { ButtonVariant, ButtonSize } from './button.types';
   selector: 'app-button',
   template: `
     <button
-      class="app-button"
-      [class.full-width]="fullWidth"
+      class="app-button" // 这个 class 是普通 HTML 永远存在，不需要 Angular 参与 <button class="app-button">
+      [class.full-width]="fullWidth" // 动态绑定 由 Angular 根据表达式决定
       [class.loading]="loading"
-      [disabled]="disabled || loading"
+      [disabled]="disabled || loading" // 当 disabled 为 true，或者 loading 为 true 时，这个按钮就会被禁用。
       [ngClass]="[variant, size]"
       (click)="clicked.emit()"
     >
@@ -33,4 +33,10 @@ export class AppButtonComponent {
   @Output() clicked = new EventEmitter<void>();
 }
 
+`
+disabled, checked selected readonly 
+required native HTML disabled attribute
+
+
+`
 
