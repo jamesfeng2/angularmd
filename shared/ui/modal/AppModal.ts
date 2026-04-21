@@ -98,8 +98,13 @@ export class AppModalComponent implements AfterViewInit, OnDestroy {
     if (!this.closeOnBackdrop || this.loading) return;
     this.close();
   }
+// 监听整个网页的键盘事件
+只关心 ESC 键
+一按 ESC → 调用 onEsc()
+@HostListener('window:resize')
+@HostListener('click', ['$event']) // 监听这个组件本身的 click 事件，并把事件对象 event 传进来。
 
-  @HostListener('document:keydown.escape')
+  @HostListener('document:keydown.escape') // 监听整个页面的 ESC 按键，一按就触发这个函数
   onEsc() {
     if (this.escToClose && this.open && !this.loading) {
       this.close();
@@ -287,10 +292,10 @@ html
 </app-button>
 
 <app-modal
-  [open]="open"
-  [loading]="loading"
-  size="lg"
-  position="center"
+  [open]="open"  // open 会变化
+  [loading]="loading"  // 带中括号：绑定“变量表达式” 
+  size="lg" // size 和 position 是“静态字符串输入”
+  position="center" // 不带中括号：传入“字面量字符串”
   (closed)="open = false"
 >
   <div header>Edit Profile</div>
