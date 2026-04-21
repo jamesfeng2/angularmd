@@ -1,5 +1,15 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'danger'
+  | 'success'
+  | 'warning'
+  | 'info'
+  | 'text'
+  | 'outline';
+
 @Component({
   selector: 'app-button',
   template: `
@@ -24,17 +34,19 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 })
 export class AppButtonComponent {
   @Input() disabled = false;
-  @Input() variant: 'primary' | 'secondary' = 'primary';
+  @Input() bvariant: ButtonVariant = 'primary';
+  @Input() variant: 'primary' | 'secondary' | 'danger' | 'success' | 'text' = 'primary';
+
 
   @Output() clicked = new EventEmitter<void>();
 }
 `
-uage:
+usage in its own template:
 
 <app-card>
   <div header>客户列表</div>
 
-  <app-button (clicked)="reload()">刷新</app-button>
+  <app-button variant="secondary"  (clicked)="reload()">刷新</app-button>
 
   <div footer>共 {{ total }} 条</div>
 </app-card>
