@@ -1,5 +1,62 @@
 # angularmd
 
+
+## 同时使用 class、ngClass、style、ngStyle
+
+```
+![class-style](./pics/class-style.png)
+
+class（静态）
+
+ngClass（动态 class）
+
+style.xxx（单属性 inline style）
+
+ngStyle（批量 inline style）
+
+/* ngClass 动态 class */
+.active-class {
+  color: red;
+  background: orange;
+}
+
+<div
+  class="box static-class"
+  [ngClass]="{ 'active-class': isActive, 'sdf':tru }"
+  [style.color]="useInlineColor ? 'yellow' : null"
+  [ngStyle]="useNgStyle ? { background: 'black', padding: '20px' } : null"
+>
+  Demo Box
+</div>
+<button (click)="toggleActive()">Toggle ngClass (active)</button>
+<button (click)="toggleInlineColor()">Toggle [style.color]</button>
+<button (click)="toggleNgStyle()">Toggle [ngStyle]</button>
+
+<pre>
+isActive: {{ isActive }}
+useInlineColor: {{ useInlineColor }}
+useNgStyle: {{ useNgStyle }}
+</pre>
+
+export class AppComponent {
+  isActive = false;
+  useInlineColor = false;
+  useNgStyle = false;
+
+  toggleActive() {
+    this.isActive = !this.isActive;
+  }
+
+  toggleInlineColor() {
+    this.useInlineColor = !this.useInlineColor;
+  }
+
+  toggleNgStyle() {
+    this.useNgStyle = !this.useNgStyle;
+  }
+
+```
+
 ## @HostListener
 
 ```

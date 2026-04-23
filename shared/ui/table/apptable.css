@@ -1,0 +1,97 @@
+.table-wrapper {
+  position: relative;
+  overflow-x: auto;
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  background: var(--table-header-bg, #f5f5f5);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  cursor: pointer;
+  padding: 12px;
+  text-align: left;
+}
+
+tbody td {
+  padding: 12px;
+  border-top: 1px solid #eee;
+}
+
+th.sorted.asc .sort-icon {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+th.sorted.desc .sort-icon {
+  transform: rotate(0deg);
+  opacity: 1;
+}
+
+th.sortable .sort-icon {
+  opacity: 0.3;
+}
+
+th.sortable:hover .sort-icon {
+  opacity: 0.6;
+}
+
+
+tr.selected {
+  background: rgba(25, 118, 210, 0.1);
+}
+
+.sortable:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.sort-icon {
+  margin-left: 6px;
+  opacity: 0.4;
+}
+
+.hideMobile {
+  display: none;
+}
+
+@media (min-width: 600px) {
+  .hideMobile {
+    display: table-cell;
+  }
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid transparent;
+  border-top-color: #1976d2;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Dark theme */
+:root[data-theme="dark"] {
+  --table-header-bg: #222;
+  color: #eee;
+}
