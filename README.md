@@ -1,5 +1,75 @@
-# angularmd
+# angular
+- parent pass string
+- class ngclass style ngstyle 
+- 5 case to use @HostListner
+- signal form
 
+
+# Signal Form 与 Reactive Form
+```
+![signform](./pics/signform.png)
+
+- 没有 ControlValueAccessor（CVA）
+
+- 表单状态 = Signals
+
+- 表单模型（model）是唯一数据源
+
+- UI 与模型自动同步
+
+- 没有 FormControl / FormGroup / FormArray
+
+- 没有 valueChanges 订阅
+
+Signal Form 的核心概念（最重要 5 点）
+1. Form Model（表单模型）= 一个 writable signal
+ts
+const loginModel = signal({
+  email: '',
+  password: ''
+});
+这个 signal 就是表单的真实数据源。
+任何 UI 输入 → 自动更新这个 signal。
+
+2. form(model) → 生成 FieldTree（字段树）
+ts
+const loginForm = form(loginModel);
+FieldTree 会根据 model 的结构自动生成字段：
+
+loginForm.email
+
+loginForm.password
+
+并且是 强类型 的。
+访问不存在的字段会直接 TS 报错。
+
+3. [formField] 指令实现双向绑定
+html
+<input type="email" [formField]="loginForm.email" />
+效果：
+
+输入框变化 → 自动更新 model
+
+model 变化 → 自动更新 UI
+无需 ngModel、无需 formControlName。
+
+4. 读取字段状态：field()
+ts
+loginForm.email().value()   // 当前值
+loginForm.email().valid()   // 是否有效
+loginForm.email().touched() // 是否触碰
+所有状态都是 signals，天然响应式。
+
+5. 更新字段：value.set()
+ts
+loginForm.email().value.set('alice@wonderland.com');
+这会同步更新：
+
+字段状态
+
+表单模型 signal
+
+```
 
 ## how parent pass string
 
