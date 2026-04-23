@@ -5,6 +5,12 @@ bindings to your component’s TypeScript variables
 [] that the value to come from code instead of a literal string from compoent.
 No evaluation, no binding.
 
+| Goal | Syntax | Why |
+| --- | --- | --- |
+| Pass literal string | ``variant="danger"`` | No evaluation needed |
+| Pass variable containing string | ``[variant]="buttonVariant"`` | Angular must evaluate variable |
+| Pass computed string | ``[variant]="isDelete ``? ``'danger' ``: ``'primary'"`` | Angular must evaluate expression |
+| Pass literal string but dynamically chosen | ``[variant]="someLogic ``? ``'x' ``: ``'y'"`` | Still dynamic |
 
 ```
 
