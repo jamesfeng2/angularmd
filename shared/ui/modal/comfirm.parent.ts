@@ -1,3 +1,13 @@
+```
+values without [] are static strings, while values with [] are dynamic 
+bindings to your component’s TypeScript variables
+
+[] that the value to come from code instead of a literal string from compoent.
+No evaluation, no binding.
+
+
+```
+
 @Component({
   standalone: true,
   imports: [AppModalComponent, AppButtonComponent],
