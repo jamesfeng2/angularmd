@@ -1,6 +1,17 @@
 # angularmd
 
 
+## how parent pass string
+
+```
+parent has: buttonVariant = 'danger';
+child has: @Input() variant!: string;
+usage: <app-button [variant]="buttonVariant"></app-button>
+![pare](./pics/pare.png)
+
+
+```
+
 ## 同时使用 class、ngClass、style、ngStyle
 
 ```
