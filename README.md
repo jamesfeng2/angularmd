@@ -3,9 +3,12 @@
 - class ngclass style ngstyle 
 - 5 case to use @HostListner
 - signal form
+- xml to signals form
+
+## 
 
 
-# Signal Form 与 Reactive Form
+## Signal Form 与 Reactive Form
 ```
 ![signform](./pics/signform.png)
 
@@ -30,6 +33,16 @@ const loginModel = signal({
 });
 这个 signal 就是表单的真实数据源。
 任何 UI 输入 → 自动更新这个 signal。
+
+export class App {
+  readonly model = signal({
+    rating: 3
+  });
+
+  readonly ratingForm = form(this.model, f => {
+    max(f.rating, 7);
+  })
+}
 
 2. form(model) → 生成 FieldTree（字段树）
 ts
