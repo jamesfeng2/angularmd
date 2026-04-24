@@ -40,10 +40,28 @@ export interface FormGroupSchema {
   group?: FormGroupSchema[];
 }
 
+alternation: array
+export interface FormArraySchema {
+  name: string;
+  field?: FormFieldSchema[];
+  group?: FormGroupSchema[];
+}
+
+
+
+
 export interface RootFormSchema {
   field?: FormFieldSchema[];
   group?: FormGroupSchema[];
 }
+
+alter to array
+export interface RootFormSchema {
+  field?: FormFieldSchema[];
+  group?: FormGroupSchema[];
+  array?: FormArraySchema[];
+}
+
 3. XML → Schema（xml2js 解析 + 归一化）
 
 npm install xml2js
@@ -98,8 +116,24 @@ export class XmlFormSchemaParser {
     return {
       field: this.normalizeFields(form.field),
       group: this.normalizeGroups(form.group),
+      //alter to array
+      array: this.normalizeArrays(form.array),
     };
   }
+
+alter to array
+private normalizeArrays(nodes: any[] | undefined): FormArraySchema[] {
+  if (!nodes) return [];
+  return nodes.map((a) => {
+    const attr = a.$ || {};
+    return {
+      name: attr.name,
+      field: this.normalizeFields(a.field),
+      group: this.normalizeGroups(a.group),
+    };
+  });
+}
+
 
 你需要把 $ 属性提取出来
   private normalizeFields(nodes: any[] | undefined): FormFieldSchema[] {
@@ -151,19 +185,27 @@ export class SignalFormBuilder {
 
   // ---------- Model 构建 ----------
 
-  private buildModel(schema: RootFormSchema): any {
-    const model: any = {};
+private buildModel(schema: RootFormSchema): any {
+  const model: any = {};
 
-    (schema.field ?? []).forEach((f) => {
-      model[f.name] = this.defaultValue(f.type);
-    });
+  // 普通字段
+  (schema.field ?? []).forEach(f => {
+    model[f.name] = this.defaultValue(f.type);
+  });
 
-    (schema.group ?? []).forEach((g) => {
-      model[g.name] = this.buildGroupModel(g);
-    });
+  // group
+  (schema.group ?? []).forEach(g => {
+    model[g.name] = this.buildGroupModel(g);
+  });
 
-    return model;
-  }
+  // array
+  (schema.array ?? []).forEach(a => {
+    model[a.name] = []; // 数组初始为空
+  });
+
+  return model;
+}
+
 
   private buildGroupModel(group: FormGroupSchema): any {
     const m: any = {};
@@ -186,7 +228,25 @@ export class SignalFormBuilder {
       case 'string':
       default: return '';
     }
-  }
+}
+
+    4.2 添加数组项（用于 AppModal）
+  addArrayItem(tree: any, arraySchema: FormArraySchema) {
+  const newItem: any = {};
+
+  (arraySchema.field ?? []).forEach(f => {
+    newItem[f.name] = this.defaultValue(f.type);
+  });
+
+  (arraySchema.group ?? []).forEach(g => {
+    newItem[g.name] = this.buildGroupModel(g);
+  });
+
+  // push
+  tree.value.update((arr: any[]) => [...arr, newItem]);
+}
+
+  
 
   // ---------- Validators 应用 ----------
 
@@ -264,12 +324,68 @@ export class DynamicSignalFormComponent {
   onSubmit() {
     console.log('Submit:', this.model()?.());
   }
+
+  openArrayItemModal(arrSchema: FormArraySchema, rowIndex: number) {
+  const arrayName = arrSchema.name;
+  const item = this.model()?.()[arrayName][rowIndex];
+
+  this.editingArray = {
+    schema: arrSchema,
+    index: rowIndex,
+    model: signal(structuredClone(item)),
+    formTree: form(signal(structuredClone(item)))
+  };
+
+  this.showModal.set(true);
 }
+
+8. 保存数组项回主表单
+ts
+saveArrayItem() {
+  const arrName = this.editingArray.schema.name;
+  const index = this.editingArray.index;
+
+  const updated = this.editingArray.model();
+
+  this.model().value.update((m: any) => {
+    const arr = [...m[arrName]];
+    arr[index] = updated;
+    return { ...m, [arrName]: arr };
+  });
+
+  this.showModal.set(false);
+}
+
+}
+
+
+
 6. 动态模板（根据 Schema 渲染 UI）
 html
 <!-- dynamic-signal-form.component.html -->
 
 <form *ngIf="schema() && formTree()" (ngSubmit)="onSubmit()">
+
+ alter to array
+ <!-- 渲染 array -->
+<ng-container *ngFor="let arr of schema()!.array">
+  <h3>{{ arr.name }}</h3>
+
+  <app-table
+    [columns]="arr.field!.map(f => f.name)"
+    [rows]="model()?.()[arr.name]"
+    (rowClicked)="openArrayItemModal(arr, $event)"
+  ></app-table>
+
+  <app-button
+    variant="primary"
+    (clicked)="addArrayItem(arr)"
+  >
+    Add {{ arr.name }}
+  </app-button>
+</ng-container>
+
+
   <!-- 顶层字段 -->
   <ng-container *ngFor="let f of schema()!.field">
     <div>
@@ -300,6 +416,150 @@ html
 
   <button type="submit">提交</button>
 </form>
+
+7  AppModal 组件模板应该包含：
+
+html
+<!-- app-modal.component.html -->
+<div class="backdrop" *ngIf="open"></div>
+
+<div class="modal" *ngIf="open">
+  <header class="modal-header">
+    <ng-content select="[modal-header]"></ng-content>
+  </header>
+
+  <section class="modal-body">
+    <ng-content select="[modal-body]"></ng-content>
+  </section>
+
+  <footer class="modal-footer">
+    <ng-content select="[modal-footer]"></ng-content>
+  </footer>
+</div>
+
+8  app-modal.component.ts
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  HostListener,
+  signal,
+  effect,
+  inject,
+  ElementRef,
+} from '@angular/core';
+
+@Component({
+  selector: 'app-modal',
+  standalone: true,
+  templateUrl: './app-modal.component.html',
+  styleUrls: ['./app-modal.component.css'],
+})
+export class AppModalComponent {
+  private host = inject(ElementRef);
+
+  @Input({ required: true }) open = false;
+  @Input() closeOnBackdrop = true;
+  @Input() escToClose = true;
+
+  @Output() closed = new EventEmitter<void>();
+
+  private scrollLocked = signal(false);
+
+  constructor() {
+    effect(() => {
+      if (this.open) this.lockScroll();
+      else this.unlockScroll();
+    });
+  }
+
+  // -----------------------------
+  // ESC key close
+  // -----------------------------
+  @HostListener('document:keydown.escape')
+  onEsc() {
+    if (this.open && this.escToClose) {
+      this.close();
+    }
+  }
+
+  // -----------------------------
+  // Backdrop click close
+  // -----------------------------
+  onBackdropClick(event: MouseEvent) {
+    if (!this.closeOnBackdrop) return;
+
+    const modal = this.host.nativeElement.querySelector('.modal');
+    if (!modal.contains(event.target)) {
+      this.close();
+    }
+  }
+
+  // -----------------------------
+  // Close modal
+  // -----------------------------
+  close() {
+    this.closed.emit();
+  }
+
+  // -----------------------------
+  // Scroll Lock
+  // -----------------------------
+  private lockScroll() {
+    if (this.scrollLocked()) return;
+    document.body.style.overflow = 'hidden';
+    this.scrollLocked.set(true);
+  }
+
+  private unlockScroll() {
+    if (!this.scrollLocked()) return;
+    document.body.style.overflow = '';
+    this.scrollLocked.set(false);
+  }
+}
+
+
+9. usage of Modal 模板：动态渲染数组项字段 使用方式 at parent level
+html
+<app-modal
+  [open]="showModal()"
+  (closed)="showModal.set(false)"
+>
+  <h2 modal-header>Edit Item</h2>
+
+  <div modal-body *ngIf="editingArray">
+    <ng-container *ngFor="let f of editingArray.schema.field">
+      <label>{{ f.name }}</label>
+      <input
+        [type]="f.type === 'number' ? 'number' : 'text'"
+        [formField]="editingArray.formTree[f.name]"
+      />
+    </ng-container>
+  </div>
+
+  <div modal-footer>
+    <app-button variant="primary" (clicked)="saveArrayItem()">Save</app-button>
+  </div>
+</app-modal>
+
+html
+<app-modal [open]="showModal()">
+  <h2 modal-header>Edit Item</h2>
+
+  <div modal-body>
+    <input [formField]="editingArray.formTree.name" />
+  </div>
+
+  <div modal-footer>
+    <app-button variant="primary">Save</app-button>
+  </div>
+</app-modal>
+
+
+
+
+
 7. 你可以怎么扩展这套生成器
 支持 FormArray：在 XML 中引入 <array name="items">，在 Schema + Builder 里加数组逻辑
 
