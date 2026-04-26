@@ -6,6 +6,89 @@
 - xml to signals form
 - model() model
 - dto
+- rxjs for streaming
+- 最佳 RxJS 组合
+
+## 最佳 RxJS 组合
+```
+
+搜索框	debounceTime + distinctUntilChanged + switchMap	等用户停下来 + 输入变化才搜 + 自动取消旧请求
+表单自动保存	debounceTime + switchMap + catchError	防抖 + 自动保存 + 错误兜底
+WebSocket 实时流	throttleTime + map + shareReplay	限频 + 转换 + 缓存最新值
+API 依赖链	switchMap + switchMap + catchError	自动取消旧请求 + 链式依赖
+批量并发请求	mergeMap	并发快
+必须按顺序执行	concatMap	串行稳定
+防重复点击	exhaustMap	忙时忽略新任务
+自动轮询	interval + switchMap	定时 + 自动取消旧请求
+多流组合（Dashboard）	combineLatest + map	任意一个变化都更新
+登录流程	exhaustMap + catchError	防重复提交
+文件上传（多文件）	mergeMap	并发上传
+日志写入	concatMap	必须按顺序写
+后端任务队列	concatMap	串行任务
+后端批量 API	mergeMap	并发任务
+微服务重试	retry + catchError	自动重试
+IoT 高频数据	throttleTime + map	限频处理
+
+搜索框最佳 RxJS 组合（企业级）
+ts
+searchResult$ = input$.pipe(
+  debounceTime(300),            // 等用户停下来
+  distinctUntilChanged(),       // 输入没变就不搜
+  switchMap(keyword => api.search(keyword)) // 自动取消旧请求
+);
+
+```
+## rxjs for streaming
+```
+
+ （Transformation）
+map	“把苹果削皮”	把值变一下，不改变流结构
+switchMap	“来新任务就把旧任务扔掉”	新值触发新流，旧流取消
+mergeMap	“来多少任务我都一起做”	并发执行
+concatMap	“排队，一个一个来”	   串行执行
+exhaustMap	“我忙着呢，新任务别来烦我”	忙时忽略新任务
+scan	“边走边累加”	像像 reduce，但每一步都输出
+
+（Combination）
+combineLatest	“谁更新都重新算一遍”	多流最新值组合
+withLatestFrom	“主流触发时顺便带上副流最新值”	主流驱动
+merge	“把两条河流合成一条”	多流合并，不保证顺序
+concat	“先走完 A 再走 B”	串行合并
+forkJoin	“等所有任务都完成再一起给结果”	类似 Promise.all
+
+
+（Filtering）
+filter	“不符合条件的都不要”	过滤值
+take	“只要前几次”	取前 N 个
+takeUntil	“直到某件事发生就停”	条件停止
+skip	“前几次我不要”	跳过前 N 个
+distinctUntilChanged	“一样的别重复说”	去重
+
+（Time-based）
+debounceTime	“等你停下来 gt一段时间再执行”	防抖（搜索框）
+throttleTime	“不管你说多少次，我每隔一段时间只回应一次。”	限频
+delay	“等一会再说”	延迟发出
+interval	“每隔一段时间说一次”	定时器
+timer	“等一下再开始说”	延时触发
+
+
+（Error Handling）
+catchError	“出错了我换一种方式继续”	错误 fallback
+retry	“再试几次”	重试
+retryWhen	“按我说的方式重试”	自定义重试策略
+
+（Multicasting）
+share	“大家一起听同一个广播”	多订阅共享
+shareReplay(1)	“新来的人我先告诉他最新消息”	缓存最新值
+publish / connect	“我准备好了才开始广播”	手动控制开始时间
+
+
+（Utility）
+tap	“顺便做点事，但不改变内容”	打 log、埋点
+startWith	“先给你一个初始值”	初始状态
+finalize	“结束时我会做点收尾工作”	清理资源
+
+```
 
 ## dto
 
