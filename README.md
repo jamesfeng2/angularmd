@@ -5,6 +5,21 @@
 - signal form in 5 keys features
 - xml to signals form
 - model() model
+- dto
+
+## dto
+
+```
+Notifications = prepend.
+Chats/logs = append.
+
+
+Server data ≠ Client data.  
+Transport shape ≠ Domain shape.
+
+timestamp string in dto, but Date object in Domain
+string in dto, but ts type is domain type: 'info' | 'warning' | 
+```
 
 
 ## model 
@@ -13,6 +28,11 @@ model is a writable signal; the signal object
 model() reads the current form data; 
 model.set() updates it.
 model.update(fn) → update based on previous value
+
+email = model<string>(''); // 这是 InputSignal + OutputSignal
+// 自动生成 emailChange output //用于 [(email)]="parentEmail" 这种双向绑定
+//  <input type="email" [(ngModel)]="email" name="email" required />
+
 
 model() 是一个 signal，保存整个表单的数据。
 用 model() 读取，用 model.set() 更新。
@@ -401,7 +421,7 @@ You read it with model() and update it with model.set(...)
 
   openArrayItemModal(arrSchema: FormArraySchema, rowIndex: number) {
   const arrayName = arrSchema.name;
-  const item = this.model()?.()[arrayName][rowIndex];
+  const item = this.model()?[arrayName][rowIndex];
 
   this.editingArray = {
     schema: arrSchema,
