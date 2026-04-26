@@ -74,7 +74,7 @@ export class NotificationStore {
     this.restoreFromLocalStorage();
   }
 
-  // ===== Creation =====
+  // update internal 
   addNotification(n: Notification) {
     this._items.update(list => [n, ...list]);
   }
@@ -82,7 +82,14 @@ export class NotificationStore {
   addBulk(list: Notification[]) {
     this._items.update(prev => [...list, ...prev]);
   }
- 
+
+ // ===== Creation =====
+
+//  Server Fetch (initial load)
+  store.loadInitialFromServer(() => http.get<NotificationDto[]>('/api/notifications'));
+
+
+// server create message 
   ingestFromServer(raw: NotificationDto[]) {
     const normalized = raw.map(dto => ({
       id: dto.id,
@@ -94,6 +101,18 @@ export class NotificationStore {
     }));
     this.addBulk(normalized);
   }
+
+  // UI create message
+  store.addNotification({
+  id: crypto.randomUUID(),
+  title: 'Saved',
+  message: 'Your changes were saved',
+  read: false,
+  type: 'success',
+  createdAt: new Date()
+});
+
+
 
   // ===== Query =====
   getById(id: string) {

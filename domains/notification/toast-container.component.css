@@ -1,0 +1,14 @@
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+.toast {
+  background: #333;
+  color: white;
+  padding: 12px 16px;
+  margin-top: 8px;
+  border-radius: 6px;
+  opacity: 0.9;
+}
