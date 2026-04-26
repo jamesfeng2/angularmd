@@ -38,7 +38,7 @@ toast.show('Saved successfully', 'success');
 
 B) call toast-container.ts
 
-C) Automatic trigger (NotificationStore effect)
+C) Automatic trigger (NotificationStore effect) binding into notification
 This is the production pattern used in many apps.
 
 Inside NotificationStore:
