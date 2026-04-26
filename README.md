@@ -396,7 +396,7 @@ You read it with model() and update it with model.set(...)
   }
 
   onSubmit() {
-    console.log('Submit:', this.model()?.());
+    console.log('Submit:', this.model());
   }
 
   openArrayItemModal(arrSchema: FormArraySchema, rowIndex: number) {
