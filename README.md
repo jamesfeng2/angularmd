@@ -34,21 +34,25 @@ export interface FormFieldSchema {
   pattern?: string;
 }
 
-export interface FormGroupSchema {
+export interface FormGroupSchema {  表示 一个对象（Object）
   name: string;
   field?: FormFieldSchema[];
   group?: FormGroupSchema[];
-}
+} 
+formTree.groupname.fieldname().value() 
 
+type: 'group' | 'array'
 alternation: array
 export interface FormArraySchema {
+  type: array
   name: string;
   field?: FormFieldSchema[];
   group?: FormGroupSchema[];
 }
+if (schema.type === 'array') renderArray(schema);
 
-
-
+//FormGroup = { name: string, age: number }
+// FormArray = { items: Array<{ name: string, age: number }> }
 
 export interface RootFormSchema {
   field?: FormFieldSchema[];
@@ -367,14 +371,14 @@ html
 <form *ngIf="schema() && formTree()" (ngSubmit)="onSubmit()">
 
  alter to array
- <!-- 渲染 array -->
+ <!-- 渲染 array --> 数组项不能直接用 [formField]，因为数组项是动态的 
 <ng-container *ngFor="let arr of schema()!.array">
   <h3>{{ arr.name }}</h3>
 
-  <app-table
-    [columns]="arr.field!.map(f => f.name)"
-    [rows]="model()?.()[arr.name]"
-    (rowClicked)="openArrayItemModal(arr, $event)"
+  <app-table  Angular Signal Form 不支持自动生成数组 FieldTree
+    [columns]="arr.field!.map(f => f.name)" 
+    [rows]="model()?.()[arr.name]" 点击 row → 打开 Modal  在 Modal 中创建 sub-form manually 保存后写回主 model
+    (rowClicked)="openArrayItemModal(arr, $event)" 
   ></app-table>
 
   <app-button
@@ -397,7 +401,7 @@ html
     </div>
   </ng-container>
 
-  <!-- group 字段 -->
+  <!-- group 字段 -->  直接递归渲染 read
   <ng-container *ngFor="let g of schema()!.group">
     <fieldset>
       <legend>{{ g.name }}</legend>
