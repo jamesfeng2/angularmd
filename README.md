@@ -4,6 +4,74 @@
 - 5 case to use @HostListner
 - signal form in 5 keys features
 - xml to signals form
+- model() model
+
+
+## model 
+```
+model is a writable signal; the signal object
+model() reads the current form data; 
+model.set() updates it.
+model.update(fn) → update based on previous value
+
+model() 是一个 signal，保存整个表单的数据。
+用 model() 读取，用 model.set() 更新。
+Group 会自动同步到 model。
+Array 必须手动更新，因为 Signal Form 不支持动态数组 FieldTree
+
+model() is a signal that stores the current form’s data object.  
+You read it with model() and update it with model.set(...)
+
+Where does model() come from?
+In your code, you create the form like this:
+
+ts
+form = signalFormGroup(schema, initialModel);
+This returns an object that includes:
+
+model → a signal holding the form’s data
+
+formTree → the structure of all fields
+
+submit → submit handler
+
+
+ts
+const { model, formTree } = form(...);
+Now:
+
+model is a signal
+
+model() returns the current value
+
+model.set(...) updates it
+
+// returns the entire form model object
+model() = {
+  items: []
+}
+
+// save
+const arr = model().items;
+arr[index] = editedItem;
+model.set({ ...model(), items: arr });
+
+
+//model()?.[arr.name]
+model()?.[arr.name]
+
+model is a signal.
+
+Signals are functions:
+
+- model() → read the value
+
+- model.set(v) → write the value
+
+- model.update(fn) → update based on previous value
+
+
+```
 
 ## xml to signals form
 
@@ -319,6 +387,8 @@ export class DynamicSignalFormComponent {
     this.formTree.set(formTree);
 
     // 观察模型变化（调试用）
+    // model() is a signal that stores the current form’s data object.  
+You read it with model() and update it with model.set(...)
     effect(() => {
       const m = this.model();
       if (m) console.log('Form model changed:', m);
