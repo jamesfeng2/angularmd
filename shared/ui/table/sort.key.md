@@ -64,7 +64,8 @@ ts
 })
 export class AppButton {
   @Input() disabled = false;
-}```
+}
+```
 3.2 AppModal（企业级、可复用）
 ts
 ```@Component({
@@ -87,9 +88,10 @@ export class AppModal {
   @Output() closed = new EventEmitter<void>();
   close() { this.closed.emit(); }
 }
+```
 3.3 AppTable（企业级、可排序）
 ts
-@Component({
+```@Component({
   selector: 'app-table',
   standalone: true,
   template: `
@@ -126,9 +128,11 @@ export class AppTable<T> {
     this.sortKey.set(key);
   }
 }
+```
 🧩 4. Feature 层：搜索框（RxJS + Signal 最佳实践）
 4.1 search.service.ts（企业级 RxJS）
 ts
+```
 @Injectable({ providedIn: 'root' })
 export class SearchService {
   private keyword = new Subject<string>();
