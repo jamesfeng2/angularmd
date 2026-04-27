@@ -1,7 +1,8 @@
 2. Core 层
 2.1 HttpClient 封装（企业级）
 ts
-```@Injectable({ providedIn: 'root' })
+```
+@Injectable({ providedIn: 'root' })
 export class HttpClientService {
   constructor(private http: HttpClient) {}
 
@@ -12,10 +13,12 @@ export class HttpClientService {
   post<T>(url: string, body: any) {
     return this.http.post<T>(url, body);
   }
-}```
+}
+```
 2.2 API Service（示例：User API）
 ts
-```@Injectable({ providedIn: 'root' })
+```
+@Injectable({ providedIn: 'root' })
 export class UserApi {
   constructor(private http: HttpClientService) {}
 
@@ -26,7 +29,8 @@ export class UserApi {
   getUser(id: string) {
     return this.http.get<User>(`/api/users/${id}`);
   }
-}```
+}
+```
 2.3 Signal Store（企业级写法）
 ts
 ```@Injectable({ providedIn: 'root' })
@@ -47,7 +51,8 @@ export class UserStore {
       complete: () => this.loading.set(false)
     });
   }
-}```
+}
+```
 🧩 3. Shared UI 组件（可直接复制）
 3.1 AppButton（Angular 21 standalone）
 ts
