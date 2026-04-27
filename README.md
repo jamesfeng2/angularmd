@@ -30,9 +30,13 @@ catchError(() => of({ error: true }))
 catchError(() => of(null)
 
 
-of([])	  发出一个“空数组”	            搜索框、列表, 表格数据, API fallback
+of([])	  发出一个“空数组”	            搜索框、列表parent API fallback
 EMPTY	    什么都不发，直接走了 complete	 表单自动保存、后台任务, 日志写入, 不污染
-of(null)	发出一个“空值”	              详情页、可选数据、允许 null
+of(null)	发出一个“空值”	              详情页child、可选数据、允许 null
+
+列表 → of([])  
+副作用 → EMPTY  
+可选数据 → of(null)
 
 ```
 
