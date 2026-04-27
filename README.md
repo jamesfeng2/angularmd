@@ -8,6 +8,33 @@
 - dto
 - rxjs for streaming
 - 最佳 RxJS 组合
+- catchEror 不需要, 必须 all the rest
+
+## catchError 不需要
+
+```
+是持续流（WebSocket / SSE / IoT）
+
+WebSocket 实时流	❌ 不需要	WebSocket 本身是持续流，错误会自动重连或关闭
+IoT 高频数据	❌ 不需要	IoT 数据本身不需要 fallback
+SSE（Server-Sent Events）	❌ 不需要	SSE 是持续流，错误由 EventSource 管理
+
+
+catchError(() => of([])) // 返回空数组 
+catchError(() => EMPTY) // 不打断用户输入
+catchError(() => of([])) // 整个链 fallback
+catchError(() => of({ file, status: 'failed' }))
+catchError(err => of({ task, status: 'failed' }))
+catchError(() => of({ status: 'error' }))
+catchError(() => of({ error: true }))
+catchError(() => of(null)
+
+
+of([])	  发出一个“空数组”	            搜索框、列表, 表格数据, API fallback
+EMPTY	    什么都不发，直接走了 complete	 表单自动保存、后台任务, 日志写入, 不污染
+of(null)	发出一个“空值”	              详情页、可选数据、允许 null
+
+```
 
 ## 最佳 RxJS 组合
 ```
@@ -68,6 +95,7 @@ result$ = userId$.pipe(
   switchMap(order => api.getProducts(order.productIds)),
   catchError(() => of([]))
 );
+
 5) 📦 批量并发请求（上传多文件）
 mergeMap
 ts
@@ -80,18 +108,21 @@ ts
 steps$.pipe(
   concatMap(step => api.submit(step)) // 串行执行
 );
+
 7) 🚫 防重复点击（登录按钮）
 exhaustMap
 ts
 login$ = fromEvent(btn, 'click').pipe(
   exhaustMap(() => api.login()) // 忙时忽略新点击
 );
+
 8) 🔄 自动轮询（每 5 秒刷新）
 interval + switchMap
 ts
 polling$ = interval(5000).pipe(
   switchMap(() => api.getStatus())
 );
+
 9) 📊 Dashboard 多流组合
 combineLatest + map
 ts
@@ -102,6 +133,8 @@ dashboard$ = combineLatest([
 ]).pipe(
   map(([price, pref, filter]) => compute(price, pref, filter))
 );
+
+
 🧨 后端场景（Node / NestJS / 微服务）
 10) 🧱 后端任务队列（必须按顺序）
 concatMap
