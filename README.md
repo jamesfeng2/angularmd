@@ -146,6 +146,7 @@ ts
 tasks$.pipe(
   concatMap(task => processTask(task))
 );
+
 11) ⚡ 批量并发 API（后端聚合服务）
 mergeMap
 ts
@@ -172,6 +173,8 @@ ts
 interval(60000).pipe(
   switchMap(() => job.run())
 );
+
+
 🧨 跨端场景（WebSocket / SSE / IoT）
 15) 📡 WebSocket + API 混合流
 combineLatest + switchMap
@@ -182,6 +185,7 @@ combined$ = combineLatest([
 ]).pipe(
   switchMap(([wsData, pref]) => api.getFiltered(wsData, pref))
 );
+
 16) 📶 SSE（Server-Sent Events）
 map + shareReplay
 ts
