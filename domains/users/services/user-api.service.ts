@@ -3,6 +3,9 @@ import { ApiService } from '../../../core/services/api.service';
 import { AppConfigService } from '../../../core/services/app-config.service';
 import { User } from '../../../core/types/user.types';
 
+// UserApiService = HTTP layer
+// ApiService = infrastructure layer
+
 @Injectable({ providedIn: 'root' })
 export class UserApiService {
 
