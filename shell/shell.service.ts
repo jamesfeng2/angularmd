@@ -2,7 +2,7 @@
 import { Injectable, signal, effect } from '@angular/core';
 import { AuthService } from '../core/auth/auth.service';
 import { AppConfigService } from '../core/config/app-config.service';
-import { loadFromLocal, saveToLocal } from '../shared/utils/storage';
+import { loadFromLocal, loadFromSession, saveToLocal, saveToSession } from '../shared/utils/storage';
 import { idbGet, idbSet } from '../shared/utils/db';
 
 // 全局状态中心（Signals）
@@ -19,10 +19,22 @@ import { idbGet, idbSet } from '../shared/utils/db';
 // 权限路由控制
 // 动态重定向
 
+// ✔ constructor 做三件事：
+// 恢复同步存储（localStorage/sessionStorage）
+// 恢复异步存储（IndexedDB）
+// 注册 effect 持久化监听
+
+// ✔ init() 做两件事：
+// 从后端加载用户/配置
+// 写入 Shell 状态（user/theme/appConfig）
+
 @Injectable({ providedIn: 'root' })
 export class Shell {
 // 全局状态 业务模块不需要关心这些，只需要读信号 全局状态中心
 // 1. 所有全局状态必须用 Signals
+
+  // --- 0 from session --
+  session = signal(loadFromSession('session'));
 
   // --- 1. 从 localStorage 恢复同步状态 ---
   user = signal<User | null>(loadFromLocal<User>('user')); 
@@ -40,6 +52,17 @@ export class Shell {
 
   // --- 5. 网络状态 ---
   network = signal({ online: true, retry: 0 });
+
+
+// 持久化监听必须在 constructor，因为它是同步绑定 Signals → Storage 的生命周期起点。
+// 恢复（restore）可以在 constructor 或 init()，取决于是否需要异步
+//       localStorage / sessionStorage（同步） IndexedDB（异步
+// effect 只能放 constructor，不放 init()。
+// 后端加载（loadUser/loadConfig）必须放 init()
+//        需要 async/await
+//        需要在 App 启动时调用
+//        不能放 constructor（constructor 不能 async）
+//        不能放字段初始化（不能 await）
 
   constructor(
     private auth: AuthService,
@@ -63,6 +86,9 @@ export class Shell {
       const cfg = this.appConfig();
       if (cfg) idbSet('appConfig', cfg);
     });
+
+      effect(() => { saveToSession('session', this.session());
+  });
   }
 
   // --- 6. 应用初始化（APP_INITIALIZER 调用） ---

@@ -149,7 +149,7 @@ export class ShellComponent {
 
 
 
-
+  // 你必须把字段初始化改成 getter 或 箭头函数，这样不会在 constructor 之前执行
   // “shell 是 constructor 参数，但 constructor 还没执行
   // user = this.shell.user;
   // theme = this.shell.theme;
