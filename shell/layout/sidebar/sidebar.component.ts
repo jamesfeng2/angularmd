@@ -1,6 +1,7 @@
 // src/app/shell/layout/sidebar/sidebar.component.ts
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { UserPrefsService } from '../../../core/services/user-prefs.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -43,13 +44,17 @@ import { RouterLink } from '@angular/router';
 })
 
 // 负责：
-
 // 显示菜单
-
 // 折叠/展开
-
 // 响应 LayoutService 状态
 export class SidebarComponent {
   @Input() menu: any[] = [];
   @Input() collapsed = false;
+
+    constructor(  
+      private prefsService: UserPrefsService
+    ) {}
+
+  layoutMode = ()=> this.prefsService.prefs().layoutMode;
+
 }

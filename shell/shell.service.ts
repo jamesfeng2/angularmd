@@ -1,9 +1,19 @@
 // src/app/shell/shell.service.ts
 import { Injectable, signal, effect } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { loadFromLocal, loadFromLocal1, loadFromLocal2, saveToLocal } from '../shared/utils/storage';
+import { Theme, UserPrefs, UIState, Flags } from '../shared/types/local-state.types';
 import { AuthService } from '../core/auth/auth.service';
 import { AppConfigService } from '../core/config/app-config.service';
 import { loadFromLocal, loadFromSession, saveToLocal, saveToSession } from '../shared/utils/storage';
 import { idbGet, idbSet } from '../shared/utils/db';
+import { UserPrefsService } from '../core/services/user-prefs.service';
+import { LayoutService } from './layout/layout.service';
+import { ThemeService } from '../core/services/theme.service';
+import { UIStateService } from '../core/services/ui-state.service';
+import { FlagsService } from '../core/services/flags-state.service';
+
 
 // 全局状态中心（Signals）
 // 持久化（localStorage + IndexedDB）
@@ -37,8 +47,36 @@ export class Shell {
   session = signal(loadFromSession('session'));
 
   // --- 1. 从 localStorage 恢复同步状态 ---
-  user = signal<User | null>(loadFromLocal<User>('user')); 
-  theme = signal<'light' | 'dark'>(loadFromLocal<'light' | 'dark'>('theme') ?? 'light');
+ // user = signal<User | null>(loadFromLocal<User>('user')); 
+  theme = signal<Theme>(loadFromLocal1<Theme>('theme') ?? 'light');
+
+  prefs = signal<UserPrefs>(
+    loadFromLocal<UserPrefs>('prefs', {
+      language: 'en',
+      layoutMode: 'full',
+    }, {
+    version: 2,
+    mergeDefault: true,
+    validate: isUserPrefs,
+    migrate: migrateUserPrefs
+  })
+  );
+
+  ui = signal<UIState>(
+    loadFromLocal('ui', {
+      sidebarCollapsed: false,
+      lastVisitedPage: '/'
+    }, {
+      version: 1,
+      mergeDefault: true
+    })
+  );
+
+  flags = signal<Flags>(
+    loadFromLocal2<Flags>('flags', {
+      onboardingDone: false,
+    })
+  );
 
   // --- 2. 异步状态（IndexedDB 恢复） ---
   appConfig = signal<AppConfig | null>(null);
@@ -69,6 +107,10 @@ export class Shell {
     private config: AppConfigService,
     private layout: LayoutService,
     private router: Router,
+    private prefsService: UserPrefsService,
+    private themeService: ThemeService,
+    private uiService: UIStateService,
+    private flagsService: FlagsService,
 
   ) {
     // --- 恢复 IndexedDB ---
@@ -78,8 +120,12 @@ export class Shell {
     });
 
     // --- 持久化 localStorage ---
-    effect(() => saveToLocal('user', this.user()));
+    // effect(() => saveToLocal('user', this.user()));
     effect(() => saveToLocal('theme', this.theme()));
+    effect(() => saveToLocal('theme', this.theme(), 1));
+    effect(() => saveToLocal('prefs', this.prefs(), 2));
+    effect(() => saveToLocal('ui', this.ui(), 1));
+    effect(() => saveToLocal('flags', this.flags()));
 
     // --- 持久化 IndexedDB ---
     effect(() => {
@@ -89,6 +135,18 @@ export class Shell {
 
       effect(() => { saveToSession('session', this.session());
   });
+
+  // --- 自动记录最近访问页面 ---
+  this.router.events.pipe(
+    filter((e:any): e is NavigationEnd => e instanceof NavigationEnd)
+  ).subscribe((e: NavigationEnd) => {
+    this.ui.update((ui: any) => ({
+      ...ui,
+      lastVisitedPage: e.urlAfterRedirects
+    }));
+  });
+
+
   }
 
   // --- 6. 应用初始化（APP_INITIALIZER 调用） ---
@@ -142,6 +200,26 @@ export class Shell {
       { label: 'Settings', path: '/settings', icon: 'settings' },
     ];
   }
+}
+
+
+// common functions for userprefs
+function migrateUserPrefs(old: any, oldVersion: number): UserPrefs {
+  if (oldVersion === 1) {
+    return {
+      language: old.language ?? 'en',
+      layoutMode: 'full'
+    };
+  }
+  return old;
+}
+
+
+function isUserPrefs(x: unknown): x is UserPrefs {
+  return typeof x === 'object'
+    && x !== null
+    && typeof (x as any).language === 'string'
+    && ['full', 'mini'].includes((x as any).layoutMode);
 }
 
 

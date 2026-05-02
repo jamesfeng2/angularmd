@@ -1,5 +1,8 @@
 // src/app/shell/layout/header/header.component.ts
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Shell } from '../../shell.service';
+import { UserPrefs } from '../../../shared/types/local-state.types';
+import { UserPrefsService } from '../../../core/services/user-prefs.service';
 
 @Component({
   selector: 'app-header',
@@ -21,6 +24,15 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
       <button (click)="toggleTheme.emit()">
         {{ theme === 'light' ? '🌞' : '🌙' }}
       </button>
+
+    <select [value]="prefs().language" (change)="changeLang($event)">
+      <option value="en">English</option>
+      <option value="zh">中文</option>
+    </select>
+
+    <div class="last-page">
+  Last visited: {{ lastVisit  }}
+</div>
     </header>
   `,
   styles: [`
@@ -57,7 +69,21 @@ export class HeaderComponent {
   @Output() toggleSidebar = new EventEmitter<void>();
   @Output() toggleTheme1 = EventEmitter<'light' | 'dark' |'system'>();
 
+  
+  constructor(private shell: Shell, 
+    private prefsService: UserPrefsService
+  ) {}
+  
+  // retrieve 
+  lastVisit = () => this.shell.ui().lastVisitedPage;  
+
+  prefs = () => this.shell.prefs;
   private lastClick = 0;
+
+  changeLang(e: Event) {
+    const lang = (e.target as HTMLSelectElement).value;
+    this.shell.prefs.update((p: UserPrefs) => ({ ...p, language: lang }));
+  }
 
   onToggleTheme() {
     // UI logic: debounce
