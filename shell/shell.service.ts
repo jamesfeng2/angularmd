@@ -119,13 +119,13 @@ export class Shell {
       if (cfg) this.appConfig.set(cfg);
     });
 
-    // --- 持久化 localStorage ---
+    // --- 持久化 localStorage --- should use services
     // effect(() => saveToLocal('user', this.user()));
     effect(() => saveToLocal('theme', this.theme()));
     effect(() => saveToLocal('theme', this.theme(), 1));
     effect(() => saveToLocal('prefs', this.prefs(), 2));
     effect(() => saveToLocal('ui', this.ui(), 1));
-    effect(() => saveToLocal('flags', this.flags()));
+    effect(() => saveToLocal('flags', this.flags(),1));
 
     // --- 持久化 IndexedDB ---
     effect(() => {
@@ -174,10 +174,23 @@ export class Shell {
       // 动态菜单
       this.menu.set(this.buildMenu(user.roles));
 
+
+      // Flags service replace constructor Flags
+      // Example: If user logs in first time, mark onboarding done
+      if (!this.flags.flags().onboardingDone) {
+        this.flags.markOnboardingDone();
+    }
+
+
     } finally {
       this.loading.set(false);
     }
   }
+
+    // Example: ShellService can expose flags to components
+    get onboardingDone() {
+      return this.flags.flags().onboardingDone;
+    }
 
     setupNavigation(user: User) {
     const menu = this.layout.buildMenu(user.roles);

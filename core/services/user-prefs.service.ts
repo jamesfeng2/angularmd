@@ -37,16 +37,16 @@ export class UserPrefsService {
 
   // --- API: set ---
   setLanguage(lang: string) {
-    this.prefs.update(p => ({ ...p, language: lang }));
+    this.prefs.update((p:UserPrefs) => ({ ...p, language: lang }));
   }
 
   setLayoutMode(mode: 'full' | 'mini') {
-    this.prefs.update(p => ({ ...p, layoutMode: mode }));
+    this.prefs.update((p:UserPrefs) => ({ ...p, layoutMode: mode }));
   }
 
   // --- API: update ---
   updatePrefs(update: Partial<UserPrefs>) {
-    this.prefs.update(p => ({ ...p, ...update }));
+    this.prefs.update((p:UserPrefs) => ({ ...p, ...update }));
   }
 
   // --- API: reset ---

@@ -11,7 +11,18 @@ export interface UIState {
 }
 
 export interface Flags {
-  onboardingDone: boolean;   // 简单 flags
+  onboardingDone: boolean;   // on boarding 
+
+  // key = bannerId, value = true
+  dismissedBanners: Record<string, boolean>;
+
+  // optional: dismissed tooltips
+  dismissedTooltips?: Record<string, boolean>;
+
+  // optional: dismissed modals
+  dismissedModals?: Record<string, boolean>;
+
+  // any “one‑time UI hints”
 }
 
 export interface LocalState {

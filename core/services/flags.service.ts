@@ -10,7 +10,10 @@ export class FlagsService {
 
   flags = signal<Flags>(
     loadFromLocal<Flags>('flags', {
-      onboardingDone: false
+      onboardingDone: false,
+      dismissedBanners: {},
+      dismissedTooltips: {},
+      dismissedModals: {},
     }, {
       version: this.VERSION,
       mergeDefault: true
@@ -21,7 +24,8 @@ export class FlagsService {
     effect(() => saveToLocal('flags', this.flags(), this.VERSION));
   }
 
-  setOnboardingDone() {
-    this.flags.update(f => ({ ...f, onboardingDone: true }));
+  // --- Onboarding ---
+  onboardingDone() {
+    this.flags.update((f: Flags) => ({ ...f, onboardingDone: true }));
   }
 }

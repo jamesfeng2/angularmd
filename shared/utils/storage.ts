@@ -106,6 +106,23 @@ export function loadFromLocal<T>(
   }
 }
 
+export function saveToLocal<T>(
+  key: string,
+  value: T,
+  version?: number
+) {
+  try {
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        _v: version ?? 1,
+        data: value
+      })
+    );
+  } catch {
+    // ignore
+  }
+}
 
 
 
