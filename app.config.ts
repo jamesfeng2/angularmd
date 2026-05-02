@@ -3,7 +3,7 @@ import { ApplicationConfig, APP_INITIALIZER } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient,withRequestsMadeViaParent, withInterceptors, withFetch, withJsonp, withXsrf } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { routes } from './app.routes';
+import { SHELL_ROUTES } from './app.route';
 import { Shell } from './shell/shell.service';
 import { refreshTokenInterceptor } from './core/http/refresh-token.interceptor';
 import { authInterceptor } from './core/http/auth.interceptor';
@@ -12,7 +12,7 @@ import { loggingInterceptor } from './core/http/logging.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
+    provideRouter(SHELL_ROUTES, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
 
     // 应用启动初始化（Shell.init）
     {

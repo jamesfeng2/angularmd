@@ -11,15 +11,15 @@ export const SHELL_ROUTES: Routes = [
     children: [
       {
         path: 'dashboard',
-        loadChildren: () => import('../features/dashboard/dashboard.routes'),
+        loadChildren: () => import('../domains/dashboard/dashboard.routes'),
       },
       {
         path: 'customers',
-        loadChildren: () => import('../features/customers/customers.routes'),
+        loadChildren: () => import('../domains/customers/customers.routes'),
       },
       {
         path: 'orders',
-        loadChildren: () => import('../features/orders/orders.routes'),
+        loadChildren: () => import('../domains/orders/orders.routes'),
       },
     ],
   },

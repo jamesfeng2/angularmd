@@ -1,21 +1,10 @@
+
+import { Routes } from '@angular/router';
+
 export const SHELL_ROUTES: Routes = [
     {
     path: '',
     loadChildren: () => import('./shell/shell.routes').then(m => m.SHELL_ROUTES),
-  },
-  {
-    path: '',
-    component: ShellComponent,
-    children: [
-      {
-        path: 'dashboard',
-        loadChildren: () => import('../features/dashboard/dashboard.routes'),
-      },
-      {
-        path: 'customers',
-        loadChildren: () => import('../features/customers/customers.routes'),
-      },
-    ],
   },
 ];
 
