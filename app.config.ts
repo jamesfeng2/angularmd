@@ -5,9 +5,10 @@ import { provideHttpClient,withRequestsMadeViaParent, withInterceptors, withFetc
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app.routes';
 import { Shell } from './shell/shell.service';
-import { authInterceptor } from '../core/http/auth.interceptor';
-import { errorInterceptor } from '../core/http/error.interceptor';
-import { loggingInterceptor } from '../core/http/logging.interceptor';
+import { refreshTokenInterceptor } from './core/http/refresh-token.interceptor';
+import { authInterceptor } from './core/http/auth.interceptor';
+import { errorInterceptor } from './core/http/error.interceptor';
+import { loggingInterceptor } from './core/http/logging.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,23 +27,19 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
      withInterceptors([
         authInterceptor, 
+        refreshTokenInterceptor,
         errorInterceptor, 
         loggingInterceptor
     ]),
-    withFetch(),
-    withJsonp(),
-    withXsrf({
+    withFetch(),   //用 Fetch 替代 XHR	for 现代浏览器、流式响应
+    withJsonp(),    //启用 JSONP 支持	for 老旧 API、跨域但不支持 CORS 的场景
+    withXsrf({      //启用 XSRF 保护	for cookie-based session 的后端
         cookieName: 'XSRF-TOKEN',
         headerName: 'X-XSRF-TOKEN',
     }),
-    withRequestsMadeViaParent(),
+    withRequestsMadeViaParent(), // 子模块 HttpClient 继承全局配置	for feature module 中使用 provideHttpClient() 时继承全局拦截器
     ),
 
-
-// withFetch()	用 Fetch 替代 XHR	for 现代浏览器、流式响应
-// withJsonp()	启用 JSONP	        for老旧 API、无 CORS
-// withXsrf()	自动注入XSRF token	for Cookie-based session
-// withRequestsMadeViaParent()子模块继承父 HttpClient 配置	Feature module内部使用 provideHttpClient
 
     // 动画
     provideAnimations(),
