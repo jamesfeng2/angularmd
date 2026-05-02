@@ -149,7 +149,8 @@ export class SearchService {
   search(keyword: string) {
     this.keyword.next(keyword);
   }
-}```
+}
+```
 4.2 search.component.ts（Signal + RxJS 混合）
 ts
 ```@Component({
@@ -180,7 +181,8 @@ export class SearchComponent {
   onInput(e: any) {
     this.search.search(e.target.value);
   }
-}```
+}
+```
 🧩 5. RxJS + Signal 最佳实践（企业级）
 层	用什么	为什么
 数据流（WebSocket、API、节流）	RxJS	流式、异步、取消、组合

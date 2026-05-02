@@ -1,0 +1,1 @@
+bootstrapApplication(AppComponent, appConfig);
