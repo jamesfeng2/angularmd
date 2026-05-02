@@ -33,6 +33,22 @@ export interface LocalState {
   flags: Flags;
 }
 
+export interface ThemePrefs {
+  theme: 'light' | 'dark' | 'system';
+  autoTheme: boolean;
+
+  highContrast: boolean;
+  colorBlindMode: boolean;
+
+  density: 'compact' | 'normal' | 'comfortable';
+  fontSize: 'small' | 'medium' | 'large';
+  reduceMotion: boolean;
+
+  sidebarMode: 'expanded' | 'collapsed' | 'floating';
+  borderRadius: number;
+  cardShadow: 'none' | 'light' | 'heavy';
+
+  chartTheme: 'light' | 'dark';
 
 // 你不会写：
  
