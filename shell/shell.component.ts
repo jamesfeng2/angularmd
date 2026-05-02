@@ -8,6 +8,7 @@ import { HeaderComponent } from './layout/header/header.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { ErrorBannerComponent } from './ui/error-banner.component';
 import { SpinnerComponent } from './ui/spinner.component';
+import { AppConfigService } from '../core/services/app-config.service';
 
 @Component({
   selector: 'app-shell',
@@ -81,6 +82,7 @@ export class ShellComponent {
     private shell: Shell,
     private layout: LayoutService,
     private router: Router,
+    private appConfigService: AppConfigService,
   ) {}
 
   // Shell 全局状态（只读）get methods
@@ -111,6 +113,12 @@ export class ShellComponent {
 
 
   isCollapsed = () => this.layout.isCollapsed();
+  config      = () => this.appConfigService.appConfig;
+
+  // Example: If you want to allow user to change page size globally 
+  changePageSize(size: number) {
+  this.appConfigService.update({ defaultPageSize: size });
+}
 
   // 写入 LayoutService.collapsed
   toggleSidebar() {   // read from child, do an action in parent sevice

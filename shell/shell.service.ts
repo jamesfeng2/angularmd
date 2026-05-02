@@ -5,14 +5,15 @@ import { filter } from 'rxjs/operators';
 import { loadFromLocal, loadFromLocal1, loadFromLocal2, saveToLocal } from '../shared/utils/storage';
 import { Theme, UserPrefs, UIState, Flags } from '../shared/types/local-state.types';
 import { AuthService } from '../core/auth/auth.service';
-import { AppConfigService } from '../core/config/app-config.service';
+import { AppConfigService } from '../core/services/app-config.service';
 import { loadFromLocal, loadFromSession, saveToLocal, saveToSession } from '../shared/utils/storage';
 import { idbGet, idbSet } from '../shared/utils/db';
 import { UserPrefsService } from '../core/services/user-prefs.service';
 import { LayoutService } from './layout/layout.service';
 import { ThemeService } from '../core/services/theme.service';
 import { UIStateService } from '../core/services/ui-state.service';
-import { FlagsService } from '../core/services/flags-state.service';
+import { FlagsService } from '../core/services/flags.service';
+import { AppConfig } from '../core/types/app-config.types';
 
 
 // 全局状态中心（Signals）
@@ -72,11 +73,11 @@ export class Shell {
     })
   );
 
-  flags = signal<Flags>(
-    loadFromLocal2<Flags>('flags', {
-      onboardingDone: false,
-    })
-  );
+  // flags = signal<Flags>(
+  //   loadFromLocal2<Flags>('flags', {
+  //     onboardingDone: false,
+  //   })
+  // );
 
   // --- 2. 异步状态（IndexedDB 恢复） ---
   appConfig = signal<AppConfig | null>(null);
@@ -125,7 +126,7 @@ export class Shell {
     effect(() => saveToLocal('theme', this.theme(), 1));
     effect(() => saveToLocal('prefs', this.prefs(), 2));
     effect(() => saveToLocal('ui', this.ui(), 1));
-    effect(() => saveToLocal('flags', this.flags(),1));
+    // effect(() => saveToLocal('flags', this.flags(),1));
 
     // --- 持久化 IndexedDB ---
     effect(() => {
