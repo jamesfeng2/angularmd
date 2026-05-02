@@ -1,6 +1,7 @@
 // src/app/shell/shell.component.ts
 import { Component, HostListener } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
+import { signal } from '@angular/core';
 import { Shell } from './shell.service';
 import { LayoutService } from './layout/layout.service';
 import { HeaderComponent } from './layout/header/header.component';
@@ -23,6 +24,7 @@ import { SpinnerComponent } from './ui/spinner.component';
       [user]="user()"
       [theme]="theme()"
       (toggleTheme)="toggleTheme()"
+      (toggleTheme1)="toggleTheme1()"
       (toggleSidebar)="toggleSidebar()"
     />
 
@@ -81,7 +83,7 @@ export class ShellComponent {
     private router: Router,
   ) {}
 
-  // Shell 全局状态（只读）
+  // Shell 全局状态（只读）get methods
   user = () => this.shell.user();
   theme = () => this.shell.theme();
   menu = () => this.shell.menu();
@@ -89,12 +91,38 @@ export class ShellComponent {
   error = () => this.shell.globalError();
 
   // --- Layout State ---
+  // ShellComponent 负责“触发”，
+  // ShellService / LayoutService 负责“状态管理”，
+  // HeaderComponent / SidebarComponent 负责“UI 渲染”
+
+// shell > header | sidebar > button | nav 
+//   User Clicks Button | nav
+//        ↓
+// HeaderComponent emits toggleTheme / toggleSidebar
+//        ↓
+// ShellComponent receives event
+//        ↓
+// ShellComponent.toggleTheme()                  只负责 UI 事件
+//        ↓
+// toggleTheme()   -> ShellService.theme.set(next) 负责全局状态
+// toggleSidebar() -> LayoutService.toggle()      负责布局状态
+//        ↓
+// All components using theme() auto-update (Signals)
+
+
   isCollapsed = () => this.layout.isCollapsed();
 
-  toggleSidebar() {
+  // 写入 LayoutService.collapsed
+  toggleSidebar() {   // read from child, do an action in parent sevice
     this.layout.toggle();
   }
 
+  // from dropdown list
+    toggleTheme1(value: 'light' | 'dark' | 'system') {
+    this.shell.theme.set(value);
+  }
+
+  // 写入 ShellService.theme
   toggleTheme() {
     const next = this.theme() === 'light' ? 'dark' : 'light';
     this.shell.theme.set(next);
