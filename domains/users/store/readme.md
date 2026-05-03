@@ -91,5 +91,33 @@ Async engine + QueryGuard
 
 
 
-## Query.update() = “更新服务器数据”
-## Store.updateOne() = “更新本地Store状态
+## Query.update() = “更新服务器数据 发请求 等服务器返回 决定如何处理结果”
+
+## Store.updateOne() = “更新本地Store状态 改内存 改 signals 通知 UI 完全同步，不涉及 API
+
+
+
+```
+
+┌──────────────────────────────┐
+│          UserStore           │  ← 用户业务状态（特有）
+│  selectedUserId              │
+│  selectUser()                │
+└───────────────▲──────────────┘
+                │ extends
+┌──────────────────────────────┐
+│     BaseEntityStore<T>       │  ← 通用实体状态（CRUD + map）
+│  setAll()                    │
+│  upsertOne()                 │
+│  updateOne()                 │
+│  removeOne()                 │
+│  optimisticUpdate()          │
+└───────────────▲──────────────┘
+                │ extends
+┌──────────────────────────────┐
+│         BaseStore            │  ← UI 状态（loading/error）
+│  setLoading()                │
+│  setError()                  │
+└──────────────────────────────┘
+
+```
