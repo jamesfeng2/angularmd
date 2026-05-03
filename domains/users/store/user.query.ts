@@ -52,43 +52,72 @@
 // └──────────────────────────────┘
 
 import { Injectable, inject } from '@angular/core';
-import { BaseQuery } from '../../../core/store/base-query';
+import { BaseEntityQuery } from '../../../core/store/base-entity-query'
 import { UserStore } from './user.store';
 import { UserApiService } from '../api/user-api.service';
-import { firstValueFrom } from 'rxjs';
+import { User } from '../../../core/types/user.types';
 
-@Injectable({ providedIn: 'root' })
-export class UserQuery extends BaseQuery<UserStore, UserApiService> {
-
+export class UserQuery extends BaseEntityQuery<UserStore, UserApiService, User> {
   constructor() {
     super(inject(UserStore), inject(UserApiService));
   }
 
-  readonly loadUsers = this.run(async () => {
-    const list = await firstValueFrom(this.api.list());
-    this.store.setAll(list);
-  });
+  // 这里写用户特有的业务逻辑
+  loadAdmins() {
+    return this.run(async () => {
+      // 直接调用 API 获取管理员用户列表
+      // const admins = await this.api.getAdmins();
+      // this.store.setAll(admins);
 
-  readonly loadUser = this.run(async (id: string) => {
-    const user = await firstValueFrom(this.api.getById(id));
-    this.store.upsertOne(user);
-  });
-
-  readonly createUser = this.run(async (data: any) => {
-    const created = await firstValueFrom(this.api.create(data));
-    this.store.upsertOne(created);
-  });
-
-  readonly updateUser = this.run(async (id: string, data: any) => {
-    const updated = await firstValueFrom(this.api.update(id, data));
-    this.store.upsertOne(updated);
-  });
-
-  readonly deleteUser = this.run(async (id: string) => {
-    await firstValueFrom(this.api.delete(id));
-    this.store.removeOne(id);
-  });
+      // 或者先获取所有用户，再过滤出管理员
+      const all = await this.api.getAll();
+      const admins = all.filter(u => u.roles.includes('admin'));
+      this.store.setAll(admins);
+    });
+  }
 }
+
+
+//without base-entity-query version, all logic in UserQuery, no BaseEntityQuery abstraction
+
+// import { Injectable, inject } from '@angular/core';
+// import { BaseQuery } from '../../../core/store/base-query';
+// import { UserStore } from './user.store';
+// import { UserApiService } from '../api/user-api.service';
+// import { firstValueFrom } from 'rxjs';
+
+// @Injectable({ providedIn: 'root' })
+// export class UserQuery extends BaseQuery<UserStore, UserApiService> {
+
+//   constructor() {
+//     super(inject(UserStore), inject(UserApiService));
+//   }
+
+//   readonly loadUsers = this.run(async () => {
+//     const list = await firstValueFrom(this.api.list());
+//     this.store.setAll(list);
+//   });
+
+//   readonly loadUser = this.run(async (id: string) => {
+//     const user = await firstValueFrom(this.api.getById(id));
+//     this.store.upsertOne(user);
+//   });
+
+//   readonly createUser = this.run(async (data: any) => {
+//     const created = await firstValueFrom(this.api.create(data));
+//     this.store.upsertOne(created);
+//   });
+
+//   readonly updateUser = this.run(async (id: string, data: any) => {
+//     const updated = await firstValueFrom(this.api.update(id, data));
+//     this.store.upsertOne(updated);
+//   });
+
+//   readonly deleteUser = this.run(async (id: string) => {
+//     await firstValueFrom(this.api.delete(id));
+//     this.store.removeOne(id);
+//   });
+// }
 
 
 

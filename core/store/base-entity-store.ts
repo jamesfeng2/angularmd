@@ -33,7 +33,7 @@ export abstract class BaseEntityStore<T extends { id: string }> extends BaseStor
   // usage: const rollback = this.store.optimisticUpdate(userId, { name: newName });
   //        this.api.updateUser(userId, { name: newName }).catch(rollback);
 
-    optimisticUpdate1(id: string, patch: Partial<T>) {
+    optimisticUpdate(id: string, patch: Partial<T>) {
       const prev = this.entities()[id];
       this.updateOne(id, patch);
       return () => this.updateOne(id, prev); // rollback
@@ -47,7 +47,7 @@ export abstract class BaseEntityStore<T extends { id: string }> extends BaseStor
   // usage: this.store.optimisticUpdate(userId, { name: newName }, 
   // () => this.api.updateUser(userId, { name: newName }));
 
-  optimisticUpdate(id: string, patch: Partial<T>, updateFn: () => Promise<any>, rollbackPatch?: Partial<T>) {
+  optimisticUpdate1(id: string, patch: Partial<T>, updateFn: () => Promise<any>, rollbackPatch?: Partial<T>) {
     const old = this.entities()[id];  // 先保存旧数据
     this.updateOne(id, patch);      // 立即更新 UI（updateOne）
     updateFn().catch(() => {

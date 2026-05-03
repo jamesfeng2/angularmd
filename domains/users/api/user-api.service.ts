@@ -23,6 +23,10 @@ export class UserApiService {
     return this.appConfig.appConfig().userEndpoint;   //userEndpoint: '/api/users',
   }
 
+  getAll(): Promise<User[]> {
+    return this.api.get<User[]>(this.endpoint);
+  }
+
   /** GET /users */
   list(params?: { search?: string; page?: number; size?: number }) {
     return this.api.get<User[]>(this.endpoint, { params });

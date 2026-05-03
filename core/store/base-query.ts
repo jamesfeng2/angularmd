@@ -1,6 +1,8 @@
 import { queryGuard } from '../../shared/utils/query-guard';
+import { BaseStore } from './base-store';
 
-export abstract class BaseQuery<TStore, TApi> {
+export abstract class BaseQuery<
+TStore extends BaseStore, TApi> {
 
   constructor(
     protected readonly store: TStore,
