@@ -1,4 +1,4 @@
-import { queryGuard } from '../../utils/query-guard';
+import { queryGuard } from '../../shared/utils/query-guard';
 
 export abstract class BaseQuery<TStore, TApi> {
 
