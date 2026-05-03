@@ -1,7 +1,7 @@
 
 
 
-## architecture
+## architecture: UI 永远只调用 UserQuery
 
 - BaseStore `UI state (loading, error, pagination, sorting)`
 - BaseEntityStore<T>	`Entity map + CRUD`
@@ -9,9 +9,21 @@
 
 ---
 - BaseQuery<TStore, TApi>	`Async engine + QueryGuard`
-- BaseEntityQuery      `通用 CRUD 模板（所有实体都能用）`
-- UserQuery	            `Domain async logic`
+- BaseEntityQuery      `通用 CRUD 模板（所有实体都能用）` 内部会调用 BaseEntityStore
+- UserQuery	            `Domain async logic`  调用 BaseEntityQuery and UserStore
 
+```
+UI
+ ↓
+UserQuery  (业务逻辑)
+ ↓
+BaseEntityQuery  (通用 CRUD)
+ ↓
+UserStore  (实体状态 + 用户特有 UI 状态)
+ ↓
+BaseEntityStore  (通用实体状态)
+
+```
 
 ---
 

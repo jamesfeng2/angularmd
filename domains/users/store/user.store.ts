@@ -40,6 +40,13 @@ export class UserStore extends BaseEntityStore<User> {
     this.selectedUserId.set(id);
   }
 
+   //this.store.setSelected(profile);
+  // this.store.setSelected(null);
+  selected = signal<User | null>(null);      //UI State selected signal 
+  setSelected(item: User | null) {
+    this.selected.set(item);
+  }
+
   reset() {
     this.clear();
     this.resetUIState();

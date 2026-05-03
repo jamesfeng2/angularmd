@@ -62,7 +62,7 @@ export class UserQuery extends BaseEntityQuery<UserStore, UserApiService, User> 
     super(inject(UserStore), inject(UserApiService));
   }
 
-  // 这里写用户特有的业务逻辑
+  // 权限相关（最常见的用户特有）
   loadAdmins() {
     return this.run(async () => {
       // 直接调用 API 获取管理员用户列表
@@ -75,7 +75,136 @@ export class UserQuery extends BaseEntityQuery<UserStore, UserApiService, User> 
       this.store.setAll(admins);
     });
   }
+
+
+    // 用户登录状态相关
+    // 这里假设 API 有一个 getProfile 方法返回当前登录用户信息
+  loadUserProfile() {
+    return this.run(async () => {
+    // const profile = await this.api.getProfile();
+    // this.store.setProfile(profile);
+
+      const all = await this.api.getAll();
+      const profile = all.find(u => u.id === 'current'); // 假设 current 是当前用户 ID
+      if (profile) {
+        this.store.selectUser(profile.id);
+      } else {
+        throw new Error('Current user profile not found');
+      }
+    });
+  }
+
+  // 用户角色 / 权限树
+  loadUserPermissions(userId: string) {
+    return this.run(async () => {
+      // const perms = await this.api.getUserPermissions(userId);
+      // this.store.setUserPermissions(userId, perms);
+
+      const user = await this.api.getById(userId);
+      const perms = user.roles.flatMap((role: string) => {
+        if (role === 'admin') return ['read', 'write', 'delete'];
+        if (role === 'editor') return ['read', 'write'];
+        return ['read'];
+      }); 
+    }); 
+  }
+
+   // 用户搜索（带过滤规则）  
+   // 这里的 filter 可以是一个简单的字符串，也可以是一个复杂的对象，取决于 API 的设计
+  searchUsers(filter: string) {
+    return this.run(async () => {
+      // const results = await this.api.searchUsers(filter);
+      // this.store.setAll(results);
+
+      const all = await this.api.getAll();
+      const results = all.filter(u => u.name.includes(filter) || u.email.includes(filter));
+      this.store.setAll(results);
+    });
+  });  
+  // filter 也可以是一个复杂的对象，取决于 API 的设计
+  searchUsers1(filter: { name?: string; email?: string }) {
+    return this.run(async () => {
+      const all = await this.api.getAll();
+      let results = all;
+      if (filter.name) {
+        results = results.filter(u => u.name.includes(filter.name?? ''));
+      }
+      if (filter.email) {
+        results = results.filter(u => u.email.includes(filter.email?? ''));
+      }
+      this.store.setAll(results);
+    });
+  }
+
+  // 用户状态管理（启用/禁用）
+  toggleUserStatus(userId: string, enabled: boolean) {
+    return this.run(async () => {
+      // await this.api.setUserStatus(userId, enabled);
+      // this.store.updateOne(userId, { enabled });
+
+      const user = await this.api.getById(userId);
+      if (user) {
+        const updated = { ...user, enabled };
+        await this.api.update(userId, updated);
+        this.store.upsertOne(updated);
+      } else {
+        throw new Error('User not found');
+      }
+    });      
+  }
+  
+
+  // calls BaseEntityQuery.update, which calls this.api.update and then this.store.upsertOne  
+  // 更新用户资料
+  updateUserProfile(userId: string, data: Partial<User>) {
+    return this.update(userId, data);    
+  };
+  
+  // 更新用户角色
+  updateUserRoles(userId: string, roles: string[]) {
+    return this.update(userId, { roles });    
+  }
+
+  // 更新用户头像  
+  updateUserAvatar(userId: string, avatarUrl: string) {
+    return this.update(userId, { avatarUrl });    
+  }
+
+  // 用户列表分页
+  loadUsersPage(page: number, size: number) {
+    return this.run(async () => {
+      // const { users, total } = await this.api.getUsersPage(page, size);
+      // this.store.setAll(users);
+      // this.store.setTotalCount(total);
+
+      const all = await this.api.getAll();
+      const total = all.length;
+      const users = all.slice(page * size, page * size + size);
+      this.store.setAll(users);
+      this.store.setTotalCount(total);
+    });
+  }
+    // 创建用户（通用 create）
+  createUser(data: Partial<User>) {
+    return this.create(data);
+  }
+    
+  // 删除用户（通用 delete）
+  deleteUser(userId: string) {
+    return this.delete(userId);   
+  }
+
+  //
+
+
+
+ 
+
+
+
 }
+
+
 
 
 //without base-entity-query version, all logic in UserQuery, no BaseEntityQuery abstraction

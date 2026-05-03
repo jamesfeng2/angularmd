@@ -2,7 +2,10 @@ import { signal, computed } from '@angular/core';
 import { BaseStore } from './base-store';
 import { EntityMap } from '../../domains/users/store/user.store';
 
-
+// {
+//   "u1": { id: "u1", name: "James", email: "james@example.com", roles: ["admin"] },
+//   "u2": { id: "u2", name: "Alice" }
+// }
 // extends { id: string }> that T 必须是一个“带 id 字段的对象”，而不是一个字符串。
 export abstract class BaseEntityStore<T extends { id: string }> extends BaseStore {
 
@@ -71,7 +74,7 @@ export abstract class BaseEntityStore<T extends { id: string }> extends BaseStor
     this.lastUpdated.set(Date.now());
   }
 
-  upsertOne(item: T) {              // upsert = update or insert
+   upsertOne(item: T) {              // upsert = update or insert
     this.entities.update((store:EntityMap<T>) => ({
       ...store,
       [item.id]: item
