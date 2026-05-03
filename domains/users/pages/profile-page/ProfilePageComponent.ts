@@ -15,6 +15,9 @@ import { UserProfileTabsComponent } from '../../components/user-profile/user-pro
     <ng-template #loading>
     <p>Loading profile...</p>
     </ng-template>
+    
+    <app-user-profile-tabs />
+
 
   `,
   standalone: true,
