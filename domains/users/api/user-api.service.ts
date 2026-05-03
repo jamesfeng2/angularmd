@@ -19,12 +19,19 @@ export class UserApiService {
   private appConfig = inject(AppConfigService);
 
   /** Resolve endpoint from AppConfig */
+  // /api/users
   private get endpoint() {
     return this.appConfig.appConfig().userEndpoint;   //userEndpoint: '/api/users',
   }
 
   getAll(): Promise<User[]> {
     return this.api.get<User[]>(this.endpoint);
+  }
+
+  /** profile update */
+  getUserProfile(id: string) {
+    return this.api.get<User>(`${this.endpoint}/${id}/profile`);
+    //throw new Error('Method not implemented.');
   }
 
   /** GET /users */

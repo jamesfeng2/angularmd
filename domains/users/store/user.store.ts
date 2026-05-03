@@ -36,10 +36,16 @@ export class UserStore extends BaseEntityStore<User> {
     return id ? this.entities()[id] : null;
   });
 
-  selectUser(id: string | null) {
+  // public selectors
+  setSelectedUser(id: string | null) {
     this.selectedUserId.set(id);
   }
 
+  setSelectedUserId(id: string | null) {
+    this.selectedUserId.set(id);
+  }
+
+  
    //this.store.setSelected(profile);
   // this.store.setSelected(null);
   selected = signal<User | null>(null);      //UI State selected signal 

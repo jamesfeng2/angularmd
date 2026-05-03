@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { ApiService } from '../../../core/services/api.service';
-import { AppConfigService } from '../../../core/services/app-config.service';
-import { User } from '../../../core/types/user.types';
+import { ApiService } from '../../../../core/services/api.service';
+import { AppConfigService } from '../../../../core/services/app-config.service';
+import { User } from '../../../../core/types/user.types';
 import { UserApiService } from '../services/user-api.service';
 
 @Component({

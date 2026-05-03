@@ -62,7 +62,20 @@ export class UserQuery extends BaseEntityQuery<UserStore, UserApiService, User> 
     super(inject(UserStore), inject(UserApiService));
   }
 
+  // 业务动作触发选中用户 永远保持最新，不需要任何手动同步
+  // 组件调用这个方法，传入用户 ID，UserQuery 会更新 UserStore 的 selectedUserId 信号，进而 selectedUser 信号会自动更新为对应的用户对象。
+  // 组件调用 selectUser('123')，UserQuery 会调用 this.store.setSelectedUser('123')，UserStore 的 selectedUserId 信号会变为 '123'，selectedUser 信号会自动计算出 ID 为 '123' 的用户对象，并更新为 selectedUser 的值。
+  // 组件可以通过 this.store.selectedUser() 来获取当前选中的用户对象。
+  // 组件调用 selectUser(null) 来取消选中用户，UserStore 的 selectedUserId 信号会变为 null，selectedUser 信号会自动更新为 null，表示没有选中的用户。
+  // usage: UserDetailComponent and UserListComponent 都会调用这个方法来设置当前选中的用户 ID，UserDetailComponent 会通过 selectedUser 信号来显示用户详情，UserListComponent 会通过 selectedUserId 信号来高亮选中的用户。
+  selectUser(id: string) {
+    this.store.setSelectedUser(id);
+  }
+
+
   // 权限相关（最常见的用户特有）
+  // 调 API → 更新 Store → UI 自动刷新 
+  // UI usage: UserListComponent 可能会有一个“管理员”过滤选项，用户选择后调用 this.query.loadAdmins() 来加载管理员用户列表，UserQuery 会调用 API 获取管理员用户数据，并更新 UserStore 的用户列表信号，UserListComponent 会自动刷新显示管理员用户。
   loadAdmins() {
     return this.run(async () => {
       // 直接调用 API 获取管理员用户列表
@@ -70,27 +83,30 @@ export class UserQuery extends BaseEntityQuery<UserStore, UserApiService, User> 
       // this.store.setAll(admins);
 
       // 或者先获取所有用户，再过滤出管理员
+      this.store.setLoading(true);
       const all = await this.api.getAll();
       const admins = all.filter(u => u.roles.includes('admin'));
       this.store.setAll(admins);
+      this.store.setLoading(false);
     });
   }
 
 
     // 用户登录状态相关
     // 这里假设 API 有一个 getProfile 方法返回当前登录用户信息
-  loadUserProfile() {
+  loadUserProfile(id: string) {
     return this.run(async () => {
-    // const profile = await this.api.getProfile();
-    // this.store.setProfile(profile);
-
-      const all = await this.api.getAll();
-      const profile = all.find(u => u.id === 'current'); // 假设 current 是当前用户 ID
-      if (profile) {
-        this.store.selectUser(profile.id);
-      } else {
-        throw new Error('Current user profile not found');
-      }
+    const profile = await this.api.getUserProfile(id);
+    this.store.upsertOne(profile);
+    this.store.setSelectedUser(profile);
+    
+      // const all = await this.api.getAll();
+      // const profile = all.find(u => u.id === id);
+      // if (profile) {
+      //   this.store.setSelectedUserId(profile.id);
+      // } else {
+      //   throw new Error('User profile not found');
+      // }
     });
   }
 
@@ -184,6 +200,25 @@ export class UserQuery extends BaseEntityQuery<UserStore, UserApiService, User> 
       this.store.setTotalCount(total);
     });
   }
+
+  // 用户列表排序
+  loadUsersSorted(sortKey: string, sortDir: 'asc' | 'desc') {
+    return this.run(async () => {
+      // const users = await this.api.getUsersSorted(sortKey, sortDir);
+      // this.store.setAll(users);
+
+      const all = await this.api.getAll();
+      const sorted = [...all].sort((a, b) => {
+        const aValue = a[sortKey as keyof User]?? 0;
+        const bValue = b[sortKey as keyof User]?? 0;
+        if (aValue < bValue) return sortDir === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDir === 'asc' ? 1 : -1;
+        return 0;
+      });
+      this.store.setAll(sorted);
+    });
+  }
+
     // 创建用户（通用 create）
   createUser(data: Partial<User>) {
     return this.create(data);

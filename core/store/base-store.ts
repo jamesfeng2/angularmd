@@ -41,6 +41,7 @@ export abstract class BaseStore {
 
   setPage(index: number) { this.pageIndex.set(index); }
   setPageSize(size: number) { this.pageSize.set(size); }
+  setTotalCount(count: number) { this.totalCount.set(count); }
 
   setSort(key: string, dir: 'asc' | 'desc') {
     this.sortKey.set(key);
