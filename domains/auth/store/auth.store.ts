@@ -88,6 +88,8 @@ export const AuthStore = signalStore(
     refresh: rxMethod<void>(
       pipe(
         switchMap(() => {
+
+          // ⭐ 核心：获取“共享的 refresh 流”
             const rt = store.refreshToken();  
             if (!rt) {
               // 没有 refresh token → 直接登出
