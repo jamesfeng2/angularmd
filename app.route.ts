@@ -6,6 +6,18 @@ export const SHELL_ROUTES: Routes = [
     path: '',
     loadChildren: () => import('./shell/shell.routes').then(m => m.SHELL_ROUTES),
   },
+    {
+    path: '',
+    loadChildren: () =>
+      import('./features/auth/auth.routes')
+        .then(m => m.AUTH_ROUTES)
+  },
+  {
+    path: 'admin',
+    loadChildren: () =>
+      import('./features/admin/admin.routes')
+        .then(m => m.ADMIN_ROUTES)
+  }
 ];
 
 

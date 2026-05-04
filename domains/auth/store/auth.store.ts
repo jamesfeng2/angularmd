@@ -5,6 +5,15 @@ import { shareReplay, tap,pipe, switchMap,tapResponse, } from 'rxjs';
 import { User } from '../../../core/types/user.types';
 import { AuthApi } from '../api/auth.api';
 
+
+// AuthStore → 管 token
+// Interceptor → refresh token
+// Effect → 监听 token 变化
+// WebSocketService → reconnect
+
+// HTTP：每次请求 → 带最新 token ✅
+// WebSocket：建立连接时 → 带一次 token ❌（之后不会自动更新）
+
 export type AuthResponse = {
   token: string;
   refreshToken: string;
