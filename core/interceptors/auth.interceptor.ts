@@ -18,7 +18,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       })
     : req;
 
+    // 跳过不需要 auth 的请求（如 refreshToken 请求） → 避免死循环
+    if (req.headers.get('x-skip-auth')) {
+       return next.handle(req);
+    }
+
  return next(authReq).pipe(
+
     catchError((err) => {
       // ⭐ 只处理 401
       if (err.status !== 401) {
