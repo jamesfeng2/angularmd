@@ -5,6 +5,7 @@ import { shareReplay,finalize, tap,pipe, switchMap, Observable, throwError } fro
 import { User } from '../../../core/types/user.types';
 import { AuthApi } from '../api/auth.api';
 import { tapResponse } from '@ngrx/operators';
+import { Router } from '@angular/router';
 
 
 // AuthStore → 管 token
@@ -30,6 +31,8 @@ export type AuthState = {
 };
 
 export const AuthStore = signalStore(
+    { providedIn: 'root' },
+
   withState<AuthState>({
     user: null as User | null,
     token: null as string | null,
@@ -43,10 +46,29 @@ export const AuthStore = signalStore(
     isLoggedIn: computed(() => !!user()),
  //   isAdmin: computed(() => user()?.role === 'admin')  //role is single value
     isAdmin: computed(() => user()?.role?.includes('admin') ?? false),  // role is array of strings
-    hasRole: (role: string) => computed(() => user()?.roles.includes(role) ?? false)
+    hasRole: (role: string) => computed(() => user()?.roles.includes(role) ?? false),
+    roles : computed(() => user()?.roles ?? [])
   })),
 
   withMethods((store, api = inject(AuthApi)) => {
+    const router = inject(Router);
+    // // 应用启动时加载当前用户（也可以由 RouterEffects 触发）
+    //     api
+    //     .getCurrentUser()
+    //     .pipe(
+    //       tapResponse({
+    //         next: (user) => {
+    //           store.user.set(user);
+    //           store.loading.set(false);
+    //         },
+    //         error: () => {
+    //           store.user.set(null);
+    //           store.loading.set(false);
+    //         },
+    //       })
+    //     )
+    //     .subscribe();
+    // }),
 
     // ⭐ 关键：共享 refresh 流
     // 解决方案：在 store 里维护一个“正在进行的刷新流”，供 interceptor 复用
@@ -69,7 +91,8 @@ export const AuthStore = signalStore(
                   refreshToken: res.refreshToken,
                   error: null
                 });
-
+                
+                router.navigate(['/dashboard']);
                 localStorage.setItem('auth', JSON.stringify(res)); 
                 // 🔁把 multi-tab sync 放到 store 初始化（withHooks）里
               },
@@ -144,7 +167,8 @@ export const AuthStore = signalStore(
         return refreshInFlight$;
       },
     
-
+    
+      
     logout() {
       patchState(store, {
         user: null,

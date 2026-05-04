@@ -5,10 +5,10 @@ import { provideHttpClient,withRequestsMadeViaParent, withInterceptors, withFetc
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { SHELL_ROUTES } from './app.route';
 import { Shell } from './shell/shell.service';
-import { refreshTokenInterceptor } from './core/http/refresh-token.interceptor';
-import { authInterceptor } from './core/http/auth.interceptor';
-import { errorInterceptor } from './core/http/error.interceptor';
-import { loggingInterceptor } from './core/http/logging.interceptor';
+import { refreshTokenInterceptor } from './core/interceptors/refresh-token.interceptor';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { loggingInterceptor } from './core/interceptors/logging.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
