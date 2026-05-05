@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { AppConfigService } from './app-config.service';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 // API Service for making HTTP requests to the backend.
 // 这个服务负责与后端 API 进行通信，提供 get、post 等方法来发送 HTTP 请求。
@@ -21,10 +23,31 @@ import { AppConfigService } from './app-config.service';
 // Ready for RetryInterceptor
 // Ready for LoggingInterceptor
 
+
+// ❌ Do NOT use it for:
+// Firebase
+// GraphQL
+// WebSockets
+// Local IndexedDB
+// Mock data
+
+// ✅ Use it for:
+// REST APIs
+// Microservices
+// Backend‑for‑frontend
+// Internal admin APIs
+// Public APIs
+
+interface ApiOptions {
+  params?: Record<string, any>;
+  headers?: Record<string, string>;
+}
+
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  // 少写 constructor 更简洁 更适合 signal / effect /standalone 
-  private http = inject(HttpClient); 
+  
+  private http = inject(HttpClient); // 少写 constructor 更简洁 更适合 signal / effect /standalone 
   private appConfig = inject(AppConfigService);
 
 
@@ -59,23 +82,49 @@ export class ApiService {
     return httpHeaders;
   }
 
+  private handle<T>(obs: Observable<T>) {
+  return obs.pipe(
+    catchError((err: any) => {
+      console.error('API error:', err);
+      return throwError(() => err);
+    })
+  );
+}
+
 
  
    // -----------------------------
   // HTTP METHODS
   // -----------------------------
   // get<T>(url: string) {return this.http.get<T>(url); }
+
+  // --------------------------------------------------------------------
+  // Generic request method (optional, can be used for more complex scenarios)
+  // --------------------------------------------------------------------
+      //   request<T>(method: string, path: string, options: any = {}) {
+      //   return this.http.request<T>(method, this.buildUrl(path), {
+      //     ...options,
+      //     params: this.toParams(options.params),
+      //     headers: this.mergeHeaders(options.headers)
+      //   });
+      // }
+      // --------------------------------------------------------------------
+      // Convenience methods for common HTTP verbs 
+      // --------------------------------------------------------------------
+      // get<T>(path: string, options?: ApiOptions) {
+      //   return this.request<T>('GET', path, options);
+      // }
+
     get<T>(
     path: string,
-    options?: {
-      params?: Record<string, any>;
-      headers?: Record<string, string>;
-    }
+    options?: ApiOptions
   ) {
-    return this.http.get<T>(this.buildUrl(path), {
-      params: this.toParams(options?.params),
-      headers: this.mergeHeaders(options?.headers)
-    });
+    return this.handle(
+      this.http.get<T>(this.buildUrl(path), {
+        params: this.toParams(options?.params),
+        headers: this.mergeHeaders(options?.headers)
+    })
+    );
   }
 
   // post<T>(url: string, body: any) {
@@ -84,10 +133,7 @@ export class ApiService {
     post<T>(
     path: string,
     body: any,
-    options?: {
-      params?: Record<string, any>;
-      headers?: Record<string, string>;
-    }
+    options?: ApiOptions
   ) {
     return this.http.post<T>(this.buildUrl(path), body, {
       params: this.toParams(options?.params),
@@ -98,24 +144,20 @@ export class ApiService {
    put<T>(
     path: string,
     body: any,
-    options?: {
-      params?: Record<string, any>;
-      headers?: Record<string, string>;
-    }
+    options?: ApiOptions
   ) {
-    return this.http.put<T>(this.buildUrl(path), body, {
-      params: this.toParams(options?.params),
-      headers: this.mergeHeaders(options?.headers)
-    });
+    return this.handle(
+      this.http.put<T>(this.buildUrl(path), body, {
+        params: this.toParams(options?.params),
+        headers: this.mergeHeaders(options?.headers)
+        })
+    );
   }
 
   patch<T>(
     path: string,
     body: any,
-    options?: {
-      params?: Record<string, any>;
-      headers?: Record<string, string>;
-    }
+    options?:ApiOptions
   ) {
     return this.http.patch<T>(this.buildUrl(path), body, {
       params: this.toParams(options?.params),
@@ -125,10 +167,7 @@ export class ApiService {
 
   delete<T>(
     path: string,
-    options?: {
-      params?: Record<string, any>;
-      headers?: Record<string, string>;
-    }
+    options?: ApiOptions
   ) {
     return this.http.delete<T>(this.buildUrl(path), {
       params: this.toParams(options?.params),
