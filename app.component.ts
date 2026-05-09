@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FeatureToggleService } from './core/services/feature-toggle.service';
 import { FeatureDirective } from './core/directives/feature.directive';
+import { FeatureToggleConfigService } from './core/services/feature-toggle-config.service';
 
 @Component({
   selector: 'app-root',
@@ -13,8 +14,14 @@ import { FeatureDirective } from './core/directives/feature.directive';
   `,
 })
 export class AppComponent {
+  constructor(private features: FeatureToggleService, 
+    private remote: FeatureToggleConfigService) {   //从外部世界获取 feature flags of database, 第三方服务，或者后端接口, （A/B 测试）
 
-  constructor(private features: FeatureToggleService) {
+     this.remote.setRemoteFlags({         
+    'login-A': Math.random() < 0.5,
+    'login-B': Math.random() >= 0.5
+  });
+
   setTimeout(() => {
     this.features.setRemoteFlags({
       'ai-tools': user.plan === 'enterprise',

@@ -5,6 +5,7 @@
 import { Injectable, signal, computed, effect, inject } from '@angular/core';
 import { environmentDev } from '../env-config';
 import { AuthStore } from '../auth/auth.store';
+import { FeatureToggleConfigService } from './feature-toggle-config.service';
 
 type FeatureFlags = Record<string, boolean>;
 
@@ -33,6 +34,7 @@ export const FEATURE_GROUPS: Record<string, string[]> = {
 @Injectable({ providedIn: 'root' })
 export class FeatureToggleService {
   private auth = inject(AuthStore);
+   private remoteToggleConfig = inject(FeatureToggleConfigService);
 
   private baseFlags = signal<FeatureFlags>({
     'new-dashboard': false,     // 业务需求 用户状态驱动 用户被封禁 → 隐藏某些功能
@@ -43,12 +45,14 @@ export class FeatureToggleService {
   });
 
   private remoteFlags = signal<FeatureFlags>({}); // from LaunchDarkly / Firebase / etc.
+  private remoteToggle = signal<FeatureFlags>({}); // from LaunchDarkly / Firebase / etc.
 
   private envOverrides = signal<FeatureFlags>(environmentDev.featureOverrides);
 
   readonly flags = computed<FeatureFlags>(() => ({
     ...this.baseFlags(),
     ...this.remoteFlags(),
+    ...this.remoteToggle(),
     ...this.envOverrides()
   }));
 

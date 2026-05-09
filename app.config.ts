@@ -11,6 +11,7 @@ import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { loggingInterceptor } from './core/interceptors/logging.interceptor';
 import { retryInterceptor } from './core/interceptors/retry.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.inteceptor';
+import { FeatureToggleConfigService } from './core/services/feature-toggle-config.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -22,6 +23,22 @@ export const appConfig: ApplicationConfig = {
       useFactory: (shell: Shell) => () => shell.init(),
       deps: [Shell],
       multi: true,
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (remote: FeatureToggleConfigService) => () => {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            remote.setRemoteFlags({
+              'login-A': Math.random() < 0.5,
+              'login-B': Math.random() >= 0.5
+            });
+            resolve(true);
+          }, 500);
+        });
+      },
+      deps: [FeatureToggleConfigService],
+      multi: true
     },
 
     // must order: 先加 Token，再处理错误，最后日志（不修改请求/响应，只记录）
