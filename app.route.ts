@@ -17,7 +17,14 @@ export const SHELL_ROUTES: Routes = [
     loadChildren: () =>
       import('./features/admin/admin.routes')
         .then(m => m.ADMIN_ROUTES)
+  },
+  {
+    path: 'dashboard',
+    canMatch: [authMatchGuard],
+    canActivate: [authActivateGuard],
+    loadComponent: () => import('./dashboard/dashboard.component')
   }
+
 ];
 
 

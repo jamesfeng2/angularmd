@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { tap, map } from 'rxjs';
 
 // （刷新逻辑）used by refresh-token.interceptor.ts
-// 负责调用刷新接口
+// 负责调用刷新接口 获取新 token
 // 不处理 token 存储（由 Shell 负责）
 // 不处理错误（由 refresh-token.interceptor.ts 负责）
 
@@ -23,7 +23,7 @@ export class AuthService {
 
   // --- Signals Store ---
   user = signal<any | null>(null);
-  accessToken = signal<string | null>(localStorage.getItem('access_token'));
+  accessToken = signal<string | null>(localStorage.getItem('access_token'));    // Token 自动持久化 刷新后自动更新 localStorage
   refreshTokenValue = signal<string | null>(localStorage.getItem('refresh_token'));
 
   // --- API endpoints ---
@@ -43,7 +43,7 @@ export class AuthService {
     );
   }
 
-  // --- Refresh Token ---
+  // --- Refresh Token called by refresh-token.interceptor.ts ---
   refreshToken() {
     const token = this.refreshTokenValue();
     if (!token) return throwError(() => new Error('No refresh token'));
@@ -54,9 +54,9 @@ export class AuthService {
     );
   }
 
-  // --- Load User Profile ---
+  // --- Load User Profile 登录后立即获取用户资料 ---
   loadUserProfile() {
-    return this.http.get<any>(this.API.profile).pipe(
+    return this.http.get<any>(this.API.profile).pipe(     //
       tap(user => this.user.set(user))
     );
   }
