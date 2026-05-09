@@ -7,7 +7,7 @@ import {
 } from '@angular/common/http';
 
 import { catchError, switchMap, throwError } from 'rxjs';
-import { AuthResponse, AuthStore } from '../../domains/auth/store/auth.store';
+import { AuthResponse, AuthStore } from '../../../domains/auth/store/auth.store';
 
 // 职责：
 

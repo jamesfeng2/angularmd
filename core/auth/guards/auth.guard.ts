@@ -1,15 +1,17 @@
 
 import { inject } from '@angular/core';
 import { CanActivateFn, CanMatchFn, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
-import { AuthStore } from '../../domains/auth/store/auth.store';
+import { AuthService } from '../../services/auth.service';
+import { AuthStore } from '../../../domains/auth/store/auth.store';
  
 /**
- * User Click
+User Click
 ↓
 NavigationStart
 ↓
-AuthGuard (check accessToken)
+AuthGuard (isLoggedIn?)
+↓
+RoleGuard (hasRole?)
 ↓
 NavigationEnd
 ↓
@@ -29,11 +31,12 @@ ErrorInterceptor
 ↓
 LoadingInterceptor
 ↓
-Signals update
+Signals update (AuthStore)
 ↓
 Change Detection
 ↓
 DOM update
+
 
 
 
@@ -71,7 +74,7 @@ const checkAuth = () => {
   const router = inject(Router);
 
   // const token = auth.accessToken();
-   const isLoggedIn = store.isLoggedIn();
+   const isLoggedIn = store.isLoggedIn(); //computed signal → 同步 → Guard 不需要订阅。
 
   if (!isLoggedIn) {
     router.navigateByUrl('/login');
@@ -83,3 +86,14 @@ const checkAuth = () => {
 
 export const authMatchGuard: CanMatchFn = () => checkAuth(); // 先检查是否有 token 没有直接拒绝匹配 避免不必要的刷新和循环导航
 export const authActivateGuard: CanActivateFn = () => checkAuth(); // 已经匹配了路由 但没有token 可能是 token 刷新中 或者刷新失败 这时直接拒绝进入页面 让用户停留在当前页（通常是登录页）等待刷新完成或者用户重新登录
+
+// 2. 不依赖 HTTP（避免死锁）
+// Guard 永远不能等待 refresh token 或发 HTTP。
+
+// ✔ 3. 与 RefreshTokenInterceptor 完美协作
+// Guard 只检查是否“有 token”
+// Interceptor 负责有效 token 和刷新 token
+
+// ✔ 4. CanMatch + CanActivate 双层保护
+// CanMatch：阻止路由匹配
+// CanActivate：阻止进入页面

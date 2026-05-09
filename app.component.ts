@@ -1,16 +1,29 @@
 // src/app/app.component.ts
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { FeatureToggleService } from './core/services/feature-toggle.service';
+import { FeatureDirective } from './core/directives/feature.directive';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, FeatureDirective],
   template: `
     <router-outlet />
   `,
 })
-export class AppComponent {}
+export class AppComponent {
+
+  constructor(private features: FeatureToggleService) {
+  setTimeout(() => {
+    this.features.setRemoteFlags({
+      'ai-tools': user.plan === 'enterprise',
+      'beta-mode': false
+    });
+  }, 3000);
+}
+
+}
 
 
 // 不调用 init()（因为 init() 已在 APP_INITIALIZER 调用）

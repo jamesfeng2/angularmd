@@ -3,6 +3,7 @@ import { Component,  inject,NgIf,ActivatedRoute } from '@angular/core';
 import { UserStore } from '../../store/user.store';
 import { UserQuery } from '../../store/user.query';
 import { UserProfileTabsComponent } from '../../components/user-profile/user-profile-tabs.component';
+import { FeatureDirective } from '../../../../core/directives/feature.directive';
 
 @Component({
   selector: 'app-profile-page',
@@ -18,10 +19,13 @@ import { UserProfileTabsComponent } from '../../components/user-profile/user-pro
     
     <app-user-profile-tabs />
 
-
+    <!-- dynamic loading dashboard or new-dashboard 或 ai-tools） -->
+      <div *feature="['dashboard']">
+        <user-dashboard></user-dashboard>
+    </div>
   `,
   standalone: true,
-  imports: [UserProfileTabsComponent, NgIf]
+  imports: [UserProfileTabsComponent, NgIf, FeatureDirective]
 })
 export class ProfilePageComponent {
   private readonly route = inject(ActivatedRoute);

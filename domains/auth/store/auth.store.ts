@@ -47,7 +47,10 @@ export const AuthStore = signalStore(
  //   isAdmin: computed(() => user()?.role === 'admin')  //role is single value
     isAdmin: computed(() => user()?.role?.includes('admin') ?? false),  // role is array of strings
     hasRole: (role: string) => computed(() => user()?.roles.includes(role) ?? false),
-    roles : computed(() => user()?.roles ?? [])
+    roles : computed(() => user()?.roles ?? []),
+ 
+    accessToken: () => store.token(), 
+    permissions: () => user()?.permissions ?? [],
   })),
 
   withMethods((store, api = inject(AuthApi)) => {

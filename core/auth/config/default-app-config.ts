@@ -1,6 +1,6 @@
 
 
-import { AppConfig } from '../types/app-config.types';
+import { AppConfig } from '../../types/app-config.types';
  
 export const DEFAULT_APP_CONFIG: AppConfig = {
   version: 1,

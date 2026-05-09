@@ -1,5 +1,8 @@
 
 import { Routes } from '@angular/router';
+import { authActivateGuard, authMatchGuard } from './core/auth/guards/auth.guard';
+import { roleGuard } from './core/auth/guards/role.guard';
+import { permissionGuard } from './core/auth/guards/permission.guard';
 
 export const SHELL_ROUTES: Routes = [
     {
@@ -20,8 +23,12 @@ export const SHELL_ROUTES: Routes = [
   },
   {
     path: 'dashboard',
-    canMatch: [authMatchGuard],
-    canActivate: [authActivateGuard],
+    // canMatch: [authMatchGuard],
+    // canActivate: [authActivateGuard],
+    // canMatch: [authMatchGuard, roleGuard(['admin'])],
+    // canActivate: [authActivateGuard, roleGuard(['admin'])],
+    canMatch: [authMatchGuard,roleGuard(['admin']), permissionGuard(['user.read', 'user.write', 'dashboard.access'])],
+    canActivate: [authActivateGuard, permissionGuard(['user.read', 'user.write'])],
     loadComponent: () => import('./dashboard/dashboard.component')
   }
 

@@ -1,7 +1,7 @@
  
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Shell } from '../../shell/shell.service';
+import { Shell } from '../../../shell/shell.service';
 import { catchError, throwError } from 'rxjs';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {

@@ -3,8 +3,8 @@
 // src/app/core/http/refresh-token.interceptor.ts
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
-import { Shell } from '../../shell/shell.service';
+import { AuthService } from '../auth.service';
+import { Shell } from '../../../shell/shell.service';
 import { catchError, filter, switchMap, throwError } from 'rxjs';
 
 // 防止并发刷新（只刷新一次）

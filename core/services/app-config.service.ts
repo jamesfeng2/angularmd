@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { AppConfig } from '../types/app-config.types';
-import { DEFAULT_APP_CONFIG } from '../config/default-app-config';
+import { DEFAULT_APP_CONFIG } from '../auth/config/default-app-config';
 import { idbGet, idbSet } from '../../shared/utils/db';
 
 // 全局应用配置（Global App Config）
