@@ -1,3 +1,5 @@
+import { Injectable, signal } from '@angular/core';
+
 @Injectable({ providedIn: 'root' })
 export class ShellService {
   user = signal<User | null>(null);
@@ -13,3 +15,6 @@ export class ShellService {
     this.loading.set(false);
   }
 }
+
+
+ 

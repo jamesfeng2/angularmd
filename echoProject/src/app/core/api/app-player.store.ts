@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { signalStore, withState, withMethods } from '@ngrx/signals';
+import { signalStore, withState, withMethods, patchState } from '@ngrx/signals';
 import { YoutubePlayerService } from '../services/youtube-player.service';
 import { NowPlaylistStore } from '../now-playlist/now-playlist.store';
 import { GoogleApiYouTubePlaylistResource, GoogleApiYouTubeVideoResource } from '../models/youtube.models';
@@ -85,14 +85,14 @@ export const AppPlayerStore = signalStore(
       toggleFullScreen() {
         const next = !store.state().isFullscreen;
         youtubePlayer.toggleFullScreen(next);
-        store.patchState({
+        patchState(store,{
           isFullscreen: next,
         });
       },
 
       toggleRepeat() {
         const next = !store.state().isRepeating;
-        store.patchState({
+        patchState(store,{
           isRepeating: next,
         });
         // 如果需要真正控制播放器循环逻辑，可以在 YoutubePlayerService 里处理
@@ -101,7 +101,7 @@ export const AppPlayerStore = signalStore(
 
       resetPlayer() {
         youtubePlayer.reset();
-        store.patchState({
+        patchState(store, {
           ...initialState,
           player: store.state().player, // 如果你不想销毁实例，可以保留
         });
@@ -112,13 +112,13 @@ export const AppPlayerStore = signalStore(
 
       setupPlayer(player: YT.Player) {
         youtubePlayer.setupPlayer(player);
-        store.patchState({ player });
+        patchState(store, { player });
       },
 
       changePlayerState(event: YT.OnStateChangeEvent) {
         // 1. 同步给 AppPlayer 自己（本地状态）
         const isPlaying = event.data === YT.PlayerState.PLAYING;
-        store.patchState({ isPlaying });
+        patchState(store,{ isPlaying });
 
         // 2. 同步给 NowPlaylistStore（比如：自动播放下一首）
         nowPlaylist.onPlayerStateChange(event);

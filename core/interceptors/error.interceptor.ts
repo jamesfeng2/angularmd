@@ -16,7 +16,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       shell.loading.set(false);
       shell.globalError?.set(err.message ?? 'Unknown error');
 
-      return throwError(() => err);
+      const formatted = {
+        status: err.status,
+        message: err.error?.message || 'Unknown error',
+        timestamp: new Date()
+      };
+      return throwError(() => formatted);
     })
   );
 };

@@ -32,6 +32,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return throwError(() => err);
   }
 
+  // const token = localStorage.getItem('access_token');
   const token = store.token();
 
   const authReq = token
@@ -39,6 +40,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         headers: req.headers.set('Authorization', `Bearer ${token}`)
       })
     : req;
+
+ 
+// export const authInterceptor: HttpInterceptorFn = (req, next) => {
+
+//   const authReq = token
+//     ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+//     : req;
+
+//   return next(authReq);
+// };
 
 
  return next(authReq).pipe(

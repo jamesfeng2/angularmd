@@ -9,6 +9,8 @@ import { refreshTokenInterceptor } from './core/interceptors/refresh-token.inter
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { loggingInterceptor } from './core/interceptors/logging.interceptor';
+import { retryInterceptor } from './core/interceptors/retry.interceptor';
+import { loadingInterceptor } from './core/interceptors/loading.inteceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,10 +28,11 @@ export const appConfig: ApplicationConfig = {
     // HttpClient + 拦截器, Angular 21 所有功能都通过 withXXX() 组合进来。
     provideHttpClient(
      withInterceptors([
-        authInterceptor, 
+        authInterceptor,
         refreshTokenInterceptor,
-        errorInterceptor, 
-        loggingInterceptor
+        retryInterceptor,
+        errorInterceptor,
+        loadingInterceptor
     ]),
     withFetch(),   //用 Fetch 替代 XHR	for 现代浏览器、流式响应
     withJsonp(),    //启用 JSONP 支持	for 老旧 API、跨域但不支持 CORS 的场景

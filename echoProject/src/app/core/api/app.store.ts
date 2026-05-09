@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
-import { signalStore, withState, withComputed, withMethods } from '@ngrx/signals';
+import { signalStore, computed, patchState, withState, withComputed, withMethods } from '@ngrx/signals';
 import { Router } from '@angular/router';
+
 
 // ==== 领域服务（示例，按你们项目实际替换） ====
 import { ThemeService } from '../services/theme.service';
@@ -61,7 +62,7 @@ export const AppStore = signalStore(
   withState(initialState),
 
   // ====== 派生状态（代替原来的 selectors$） ======
-  withComputed((store) => ({
+  withComputed((store: AppState) => ({
     // 是否已登录
     isAuthenticated: () => !!store.user(),
     // 当前主题列表
@@ -84,12 +85,12 @@ export const AppStore = signalStore(
 
       loadThemes() {
         const themes = themeService.getAvailableThemes();
-        store.patchState({ themes });
+        patchState(store,{ themes });
       },
 
       changeTheme(theme: string) {
         themeService.applyTheme(theme);
-        store.patchState({ currentTheme: theme });
+        patchState(store,{ currentTheme: theme });
       },
 
       toggleSidebar() {
@@ -98,7 +99,7 @@ export const AppStore = signalStore(
       },
 
       toggleModal(show: boolean, media?: any) {
-        store.patchState({
+        patchState(store,{
           showAddToPlaylist: show,
           mediaToPlaylist: show ? media ?? null : null,
         });
@@ -108,7 +109,7 @@ export const AppStore = signalStore(
 
       loadCurrentVersion() {
         const version = versionService.getCurrentVersion();
-        store.patchState({ appVersion: version });
+        patchState(store,{ appVersion: version });
       },
 
       async checkVersion() {
@@ -116,7 +117,7 @@ export const AppStore = signalStore(
         const latest = await versionService.fetchLatestVersion();
         const hasNewVersion = !!latest && latest !== current;
 
-        store.patchState({
+        patchState(store,{
           appVersion: current,
           latestVersion: latest,
           hasNewVersion,
@@ -130,24 +131,27 @@ export const AppStore = signalStore(
       updateVersion() {
         // 这里可以做：清缓存、强制刷新等
         versionService.forceReload();
+        versionService.clearLocalCache();
+        // 3. 清除 Service Worker 缓存（如果你的项目有 PWA）
+        versionService.clearServiceWorkerCache();
       },
 
       // ---------- 用户认证 ----------
 
       async checkUserAuth() {
-        store.patchState({ isCheckingAuth: true });
+        patchState(store,{ isCheckingAuth: true });
         try {
           const user = await authService.getCurrentUser();
-          store.patchState({ user, isCheckingAuth: false });
+          patchState(store,{ user, isCheckingAuth: false });
         } catch (e) {
-          store.patchState({ user: null, isCheckingAuth: false });
+          patchState(store,{ user: null, isCheckingAuth: false });
         }
       },
 
       async signinUser() {
         try {
           const user = await authService.signIn();
-          store.patchState({ user });
+          patchState(store,{ user });
         } catch (e: any) {
           this.notifyError('登录失败');
         }
@@ -155,20 +159,20 @@ export const AppStore = signalStore(
 
       async signoutUser() {
         await authService.signOut();
-        store.patchState({ user: null });
+        patchState(store,{ user: null });
       },
 
       // ---------- 播放列表 ----------
 
       async loadUserPlaylists() {
         const playlists = await playlistService.getUserPlaylists();
-        store.patchState({ usersPlaylists: playlists });
+        patchState(store,{ usersPlaylists: playlists });
       },
 
       async addToPlaylist(playlist: AppPlaylist, media: any) {
         await playlistService.addMediaToPlaylist(playlist.id, media);
         notification.success('已加入播放列表');
-        store.patchState({ showAddToPlaylist: false, mediaToPlaylist: null });
+        patchState(store,{ showAddToPlaylist: false, mediaToPlaylist: null });
       },
 
       // ---------- 搜索 / 分页 ----------
@@ -188,7 +192,7 @@ export const AppStore = signalStore(
 
       notifyError(message: string) {
         notification.error(message);
-        store.patchState({
+        patchState(store,{
           errors: [...store.errors(), message],
         });
       },

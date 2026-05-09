@@ -47,7 +47,8 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
 
       // 开始刷新
       isRefreshing = true;
-
+      // if (error.status === 401 && !req.url.includes('/auth/refresh')) 
+      
       return auth.refreshToken(refreshToken).pipe(
         switchMap(newTokens => {
           isRefreshing = false;

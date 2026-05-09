@@ -41,7 +41,7 @@ export const AuthStore = signalStore(
     error: null as string | null
   }),
 
-  withComputed((store) => ({
+  withComputed((store: AuthState) => ({
     const user = () => store.user(),
     isLoggedIn: computed(() => !!user()),
  //   isAdmin: computed(() => user()?.role === 'admin')  //role is single value
