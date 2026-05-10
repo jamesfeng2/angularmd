@@ -9,6 +9,41 @@
 - rxjs for streaming
 - 最佳 RxJS 组合
 - catchEror 不需要, 必须 all the rest
+- expand 自己再发出自己，让 Observable 无限或按条件递归下去
+
+## expand = 每次 next 都会再触发一次新的 Observable → 形成递归链。
+
+```
+of(1).pipe(
+  expand(x => of(x + 1)),
+  take(5)
+)  1, 2, 3, 4, 5
+
+```
+
+- 轮询（polling）直到条件满足
+```
+this.api.getStatus().pipe(
+  expand(res => res.done ? EMPTY : timer(1000).pipe(
+    switchMap(() => this.api.getStatus())
+  )),
+  takeWhile(res => !res.done, true)
+)
+
+```
+
+- 2. 分页加载（自动递归下一页）
+  expand 可以自动请求下一页。
+```
+this.api.getPage(1).pipe(
+  expand(page => page.hasNext ? this.api.getPage(page.next) : EMPTY),
+  takeWhile(page => page.hasNext, true),
+  map(page => page.items)
+)
+
+```
+
+
 
 ## catchError 不需要
 
