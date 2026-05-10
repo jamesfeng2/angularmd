@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { NotificationStore } from '../store/notification-store';
 
 // Notification Service
 // 这个服务负责存储和管理全局的通知状态，例如 snackbar 的消息和类型，供整个应用使用。
@@ -11,15 +12,48 @@ import { Injectable, signal } from '@angular/core';
 // 你可以把它放在 ShellService 里，但为了更清晰的职责分离，建议放在单独的 NotificationService。
 // 这个服务的职责是管理全局通知状态，保持单一职责原则，避免把它和认证、用户信息、UI 状态等其他状态混在一起，保持代码的清晰和可维护性。    
 // 你可以根据实际需求扩展 NotificationService 的功能，例如添加通知日志记录、通知队列等功能，但核心职责是管理全局通知状态，供整个应用使用。
+
+// simple version using signal
+// @Injectable({ providedIn: 'root' })
+// export class NotificationService {
+//   snackbar = signal<{ message: string; type: string } | null>(null);
+
+//   show(message: string, type: 'info' | 'success' | 'error' = 'info') {
+//     this.snackbar.set({ message, type });
+//   }
+
+//   clear() {
+//     this.snackbar.set(null);
+//   }
+// }
+
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  snackbar = signal<{ message: string; type: string } | null>(null);
+  constructor(private store: NotificationStore) {}
 
-  show(message: string, type: 'info' | 'success' | 'error' = 'info') {
-    this.snackbar.set({ message, type });
+  add(message: string, type: Notification['type'] = 'info') {
+    this.store.add(message, type);
+  }
+
+  remove(id: string) {
+    this.store.remove(id);
+  }
+
+  markAsRead(id: string) {
+    this.store.markAsRead(id);
+  }
+
+  markAllAsRead() {
+    this.store.markAllAsRead();
   }
 
   clear() {
-    this.snackbar.set(null);
+    this.store.clear();
   }
+
+  notifications = this.store.notifications;
+  unread = this.store.unread;
+  unreadCount = this.store.unreadCount;
+  sorted = this.store.sorted;
 }
+
