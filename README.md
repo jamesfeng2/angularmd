@@ -106,6 +106,25 @@ of(null)	发出一个“空值”	              详情页child、可选数据、
 ## 最佳 RxJS 组合
 ```
 
+| 场景 | 操作符组合 | 含义（Plain Chinese） |
+| --- | --- | --- |
+| **[搜索框](ca://s?q=RxJS_搜索框_best_practice)** | **debounceTime + distinctUntilChanged + switchMap** | 等用户停下来 + 输入变化才搜 + 自动取消旧请求 |
+| **[表单自动保存](ca://s?q=RxJS_表单自动保存)** | **debounceTime + switchMap + catchError** | 防抖 + 自动保存 + 错误兜底 |
+| **[WebSocket 实时流](ca://s?q=RxJS_WebSocket_实时流)** | **throttleTime + map + shareReplay** | 限频 + 转换 + 缓存最新值 |
+| **[API 依赖链](ca://s?q=RxJS_API_依赖链)** | **switchMap + switchMap + catchError** | 自动取消旧请求 + 链式依赖 |
+| **[批量并发请求](ca://s?q=RxJS_批量并发请求)** | **mergeMap** | 并发快 |
+| **[必须按顺序执行](ca://s?q=RxJS_串行执行)** | **concatMap** | 串行稳定 |
+| **[防重复点击](ca://s?q=RxJS_防重复点击)** | **exhaustMap** | 忙时忽略新任务 |
+| **[自动轮询](ca://s?q=RxJS_自动轮询)** | **interval + switchMap** | 定时 + 自动取消旧请求 |
+| **[多流组合（Dashboard）](ca://s?q=RxJS_多流组合)** | **combineLatest + map** | 任意一个变化都更新 |
+| **[登录流程](ca://s?q=RxJS_登录流程)** | **exhaustMap + catchError** | 防重复提交 |
+| **[文件上传（多文件）](ca://s?q=RxJS_文件上传_多文件)** | **mergeMap** | 并发上传 |
+| **[日志写入](ca://s?q=RxJS_日志写入)** | **concatMap** | 必须按顺序写 |
+| **[后端任务队列](ca://s?q=RxJS_后端任务队列)** | **concatMap** | 串行任务 |
+| **[后端批量 API](ca://s?q=RxJS_后端批量_API)** | **mergeMap** | 并发任务 |
+| **[微服务重试](ca://s?q=RxJS_微服务重试)** | **retry + catchError** | 自动重试 |
+| **[IoT 高频数据](ca://s?q=RxJS_IoT_高频数据)** | **throttleTime + map** | 限频处理 |
+
 搜索框	debounceTime + distinctUntilChanged + switchMap	等用户停下来 + 输入变化才搜 + 自动取消旧请求
 表单自动保存	debounceTime + switchMap + catchError	防抖 + 自动保存 + 错误兜底
 WebSocket 实时流	throttleTime + map + shareReplay	限频 + 转换 + 缓存最新值
