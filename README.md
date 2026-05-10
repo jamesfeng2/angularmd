@@ -51,9 +51,10 @@
 <div [ngClass]="{ ...baseClasses, active: isActive() }"></div>   // class/style 合并
 
 
-@for (item of [...items()]; track item.id) {   // 复制数组避免 mutation
+for (item of [...items()]; track item.id) {   // 复制数组避免 mutation
   <li>{{ item.name }}</li>
 }
+
 ```
 
 - Rest
