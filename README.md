@@ -125,25 +125,11 @@ of(null)	发出一个“空值”	              详情页child、可选数据、
 | **[微服务重试](ca://s?q=RxJS_微服务重试)** | **retry + catchError** | 自动重试 |
 | **[IoT 高频数据](ca://s?q=RxJS_IoT_高频数据)** | **throttleTime + map** | 限频处理 |
 
-搜索框	debounceTime + distinctUntilChanged + switchMap	等用户停下来 + 输入变化才搜 + 自动取消旧请求
-表单自动保存	debounceTime + switchMap + catchError	防抖 + 自动保存 + 错误兜底
-WebSocket 实时流	throttleTime + map + shareReplay	限频 + 转换 + 缓存最新值
-API 依赖链	switchMap + switchMap + catchError	自动取消旧请求 + 链式依赖
-批量并发请求	mergeMap	并发快
-必须按顺序执行	concatMap	串行稳定
-防重复点击	exhaustMap	忙时忽略新任务
-自动轮询	interval + switchMap	定时 + 自动取消旧请求
-多流组合（Dashboard）	combineLatest + map	任意一个变化都更新
-登录流程	exhaustMap + catchError	防重复提交
-文件上传（多文件）	mergeMap	并发上传
-日志写入	concatMap	必须按顺序写
-后端任务队列	concatMap	串行任务
-后端批量 API	mergeMap	并发任务
-微服务重试	retry + catchError	自动重试
-IoT 高频数据	throttleTime + map	限频处理
+ 
 
 搜索框最佳 RxJS 组合（企业级）
 
+```
 1) 🔍 搜索框（最佳组合）
 debounceTime + distinctUntilChanged + switchMap
 ts
