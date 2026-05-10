@@ -12,6 +12,11 @@
 - expand 自己再发出自己，让 Observable 无限或按条件递归下去
 
 ## expand = 每次 next 都会再触发一次新的 Observable → 形成递归链。
+- 默认是 无限递归
+- 默认是 merge 行为（并发）
+- 必须用 take / EMPTY 停止
+- expand() 是“可取消、可组合、可并发控制、可流式处理”的递归流。
+- setTimeout() 是“裸奔的定时器”，无法取消、无法组合、无法和 RxJS/Signals 协作。
 
 ```
 of(1).pipe(
@@ -21,7 +26,16 @@ of(1).pipe(
 
 ```
 
+
 - 轮询（polling）直到条件满足
+   - ✔ 可取消（unsubscribe）
+  - ✔ 可组合（switchMap / mergeMap / catchError）
+  - ✔ 可暂停 / 恢复
+  - ✔ 可在组件销毁时自动停止（takeUntilDestroyed）
+  - ✔ 不会内存泄漏
+  - ✔ 不会产生竞争条件（race condition）
+  - ✔ 不会产生僵尸请求
+  - ✔ 完全响应式（Signals / RxJS 都能订阅）
 ```
 this.api.getStatus().pipe(
   expand(res => res.done ? EMPTY : timer(1000).pipe(
@@ -32,7 +46,7 @@ this.api.getStatus().pipe(
 
 ```
 
-- 2. 分页加载（自动递归下一页）
+- 分页加载（自动递归下一页）
   expand 可以自动请求下一页。
 ```
 this.api.getPage(1).pipe(
@@ -42,7 +56,21 @@ this.api.getPage(1).pipe(
 )
 
 ```
+- 树结构遍历（BFS）
+```
+of(root).pipe(
+  expand(node => from(node.children)),
+  map(node => node.value)
+)
 
+```
+- 重试策略（递归延迟）
+```
+this.api.load().pipe(
+  expand((_, i) => i < 3 ? timer(1000).pipe(switchMap(() => this.api.load())) : EMPTY),
+  take(1)
+)
+```
 
 
 ## catchError 不需要
