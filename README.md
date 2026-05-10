@@ -15,13 +15,15 @@
 - 决定注入器的查找路径 @Host, @Self, @SkipSelf, and @Optional
 
   ## 控制 DI（依赖注入）从哪里找依赖、找不到时是否报错。
-
-  | 装饰器 | 作用 | 查找方向 | 找不到时 |
+  
+@Host、@Self、@SkipSelf、@Optional = 控制 DI（依赖注入）从哪里找依赖、找不到时是否报错。  
+| 装饰器 | 作用 | 查找方向 | 找不到时 |
 | --- | --- | --- | --- |
 | **[@Host](ca://s?q=Explain_Angular_Host)** | 只在 Host Element 的注入器找 | 停在 Host，不往上 | 报错 |
 | **[@Self](ca://s?q=Explain_Angular_Self)** | 只在当前注入器找 | 不往父级找 | 报错 |
 | **[@SkipSelf](ca://s?q=Explain_Angular_SkipSelf)** | 跳过当前，从父级开始找 | 从 parent 开始 | 报错 |
 | **[@Optional](ca://s?q=Explain_Angular_Optional)** | 找不到也不报错 | 正常查找路径 | 返回 null |
+
 
 ```
 constructor(@Self() private logger: LoggerService) {}   // 只在当前注入器查找，不往上级查找
