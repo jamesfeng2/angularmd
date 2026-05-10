@@ -37,7 +37,8 @@
 | **Spread（展开）** | ``...x`` | 把集合拆开 | ``[...arr]`` |
 | **Rest（收集）** | ``...x`` | 把多个元素收集 | ``(...args)`` |
 
-- Spread 
+- Spread
+  
   ```
   add(item) {
   this.items.update(list => [...list, item]); // Signal 数组 
@@ -53,7 +54,9 @@
   <li>{{ item.name }}</li>
 }
 ```
+
 - Rest
+  
 ```
 数组 rest：const [...rest] = arr
 对象 rest：const {...rest} = obj
@@ -92,6 +95,7 @@ of(1).pipe(
   - ✔ 不会产生竞争条件（race condition）
   - ✔ 不会产生僵尸请求
   - ✔ 完全响应式（Signals / RxJS 都能订阅）
+    
 ```
 this.api.getStatus().pipe(
   expand(res => res.done ? EMPTY : timer(1000).pipe(
