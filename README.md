@@ -30,6 +30,7 @@
 | **父 → 子（data down）** | **Signals** | Input 绑定也可以，但 Signals 更好 |
 | **子 → 父（flow up）** | **事件（output function）** | ❌ Signals（会破坏单向流） |
 
+
 ## Spread on template, array, object, func param, Rest on array and object 
 
 | 用法 | 语法 | 含义 | 示例 |
@@ -53,7 +54,6 @@
 @for (item of [...items()]; track item.id) {   // 复制数组避免 mutation
   <li>{{ item.name }}</li>
 }
-
 ```
 
 - Rest
