@@ -10,6 +10,62 @@
 - 最佳 RxJS 组合
 - catchEror 不需要, 必须 all the rest
 - expand 自己再发出自己，让 Observable 无限或按条件递归下去
+- spread vs rest
+- Signals 是 data flowing down vs Events 是 flow up
+
+  ## 向上流（flow up）仍然用事件（EventEmitter / output function）
+  - 子组件点击按钮 → 通知父组件
+  - 子组件提交表单 → 通知父组件
+  - 子组件状态变化 → 通知父组件
+
+  - why
+    1.   父组件不应该读子组件内部状态 这会让组件耦合，破坏封装
+    2. 会形成 “反向依赖” 父依赖子 → 子依赖父 → 组件树变成网状结构
+    3. 会导致无限循环（effect → signal → effect）
+    4. Angular 官方设计就是单向数据流 
+   
+
+| 方向 | 正确方式 | 错误方式 |
+| --- | --- | --- |
+| **父 → 子（data down）** | **Signals** | Input 绑定也可以，但 Signals 更好 |
+| **子 → 父（flow up）** | **事件（output function）** | ❌ Signals（会破坏单向流） |
+
+## Spread on template, array, object, func param, Rest on array and object 
+
+| 用法 | 语法 | 含义 | 示例 |
+| --- | --- | --- | --- |
+| **Spread（展开）** | ``...x`` | 把集合拆开 | ``[...arr]`` |
+| **Rest（收集）** | ``...x`` | 把多个元素收集 | ``(...args)`` |
+
+- Spread 
+  ```
+  add(item) {
+  this.items.update(list => [...list, item]); // Signal 数组 
+  }
+ 
+<child [config]="{ ...defaultConfig, ...override }"></child>  //合并对象（常用于 Input
+<child [data]="{ ...user(), role: 'admin' }"></child>
+
+<div [ngClass]="{ ...baseClasses, active: isActive() }"></div>   // class/style 合并
+
+
+@for (item of [...items()]; track item.id) {   // 复制数组避免 mutation
+  <li>{{ item.name }}</li>
+}
+```
+- Rest
+```
+数组 rest：const [...rest] = arr
+对象 rest：const {...rest} = obj
+函数 rest 参数：(...args) => {}
+
+const { id, ...rest } = user();
+
+const { id, ...info } = { id: 1, name: 'James', age: 20 };
+// info = { name: 'James', age: 20 }
+
+``` 
+
 
 ## expand = 每次 next 都会再触发一次新的 Observable → 形成递归链。
 - 默认是 无限递归
