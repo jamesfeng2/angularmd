@@ -45,15 +45,15 @@
   this.items.update(list => [...list, item]); // Signal 数组 
   }
  
-<child [config]="{ ...defaultConfig, ...override }"></child>  //合并对象（常用于 Input
-<child [data]="{ ...user(), role: 'admin' }"></child>
+<child [config]="{ ...defaultConfig, ...override }">   //合并对象（常用于 Input
+<child [data]="{ ...user(), role: 'admin' }"></cd>
 
-<div [ngClass]="{ ...baseClasses, active: isActive() }"></div>   // class/style 合并
+<div [ngClass]="{ ...baseClasses, active: isActive() }"></di>   // class/style 合并
 
 
-for (item of [...items()]; track item.id) {   // 复制数组避免 mutation
+@for (item of [...items()]; track item.id) {   // 复制数组避免 mutation
   <li>{{ item.name }}</li>
-}
+ 
 
 ```
 
