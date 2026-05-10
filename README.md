@@ -129,75 +129,77 @@ of(null)	发出一个“空值”	              详情页child、可选数据、
 
 搜索框最佳 RxJS 组合（企业级）
 
-```
+
 1) 🔍 搜索框（最佳组合）
 debounceTime + distinctUntilChanged + switchMap
-ts
+
+```
 searchResult$ = input$.pipe(
   debounceTime(300),            // 等用户停下来
   distinctUntilChanged(),       // 输入没变不搜
   switchMap(keyword => api.search(keyword)), // 自动取消旧请求
   catchError(() => of([]))
 );
-
+```
 2) 📝 表单自动保存（自动草稿）
 debounceTime + switchMap + catchError
-ts
+```
 autoSave$ = formValue$.pipe(
   debounceTime(500),
   switchMap(value => api.saveDraft(value)),
   catchError(() => EMPTY)
 );
-
-3) 📡 WebSocket 实时流 处理 WebSocket 原始消息（价格、汇率、IoT） WebSocket 是“源头” 已经在不断发消息，不是“触发器” 不需要再发 API、不需要再创建新 Observable  所以只需要 map 做同步转换
+```
+4) 📡 WebSocket 实时流 处理 WebSocket 原始消息（价格、汇率、IoT） WebSocket 是“源头” 已经在不断发消息，不是“触发器” 不需要再发 API、不需要再创建新 Observable  所以只需要 map 做同步转换
 throttleTime + map + shareReplay(1)
-ts
+```
 price$ = ws$.pipe(
   throttleTime(100),      // 限频 太快，必须限速
   map(msg => msg.price), // 因为 WebSocket 本身就是一个“已经在发数据的流”，而 switchMap 是用来“把一个值变成一个新的流”的
   shareReplay(1)          // 缓存最新值 但你希望 新打开的页面也能马上看到最新价格（缓存）
 );
-
-4) 🔗 API 依赖链（用户 → 订单 → 商品）
+```
+5) 🔗 API 依赖链（用户 → 订单 → 商品）
 switchMap + switchMap + catchError
-ts
+``
 result$ = userId$.pipe(
   switchMap(id => api.getUser(id)),
   switchMap(user => api.getOrders(user.id)),
   switchMap(order => api.getProducts(order.productIds)),
   catchError(() => of([]))
 );
-
-5) 📦 批量并发请求（上传多文件）
+```
+6) 📦 批量并发请求（上传多文件）
 mergeMap
-ts
+``
 uploadResults$ = from(files).pipe(
   mergeMap(file => api.upload(file)) // 并发上传
 );
-6) 🧾 必须按顺序执行（表单步骤、日志）
+```
+7) 🧾 必须按顺序执行（表单步骤、日志）
 concatMap
-ts
+```
 steps$.pipe(
   concatMap(step => api.submit(step)) // 串行执行
 );
-
-7) 🚫 防重复点击（登录按钮）
+```
+8) 🚫 防重复点击（登录按钮）
 exhaustMap
-ts
+```
 login$ = fromEvent(btn, 'click').pipe(
   exhaustMap(() => api.login()) // 忙时忽略新点击
 );
-
-8) 🔄 自动轮询（每 5 秒刷新）
+```
+9) 🔄 自动轮询（每 5 秒刷新）
 interval + switchMap
-ts
+```
 polling$ = interval(5000).pipe(
   switchMap(() => api.getStatus())
 );
-
-9) 📊 Dashboard 多流组合
+```
+10) 📊 Dashboard 多流组合
 combineLatest + map
-ts
+```
 dashboard$ = combineLatest([
   price$,
   userPref$,
@@ -205,64 +207,66 @@ dashboard$ = combineLatest([
 ]).pipe(
   map(([price, pref, filter]) => compute(price, pref, filter))
 );
-
+```
 
 🧨 后端场景（Node / NestJS / 微服务）
 10) 🧱 后端任务队列（必须按顺序）
 concatMap
-ts
+```
 tasks$.pipe(
   concatMap(task => processTask(task))
 );
-
+```
 11) ⚡ 批量并发 API（后端聚合服务）
 mergeMap
-ts
+```
 results$ = from(ids).pipe(
   mergeMap(id => api.getUser(id), 10) // 限制并发 10
 );
+```
 12) 🔁 微服务重试机制
 retry + catchError
-ts
+```
 service$.pipe(
   retry(3),
   catchError(err => of({ status: 'failed' }))
 );
+```
 13) 📡 IoT 高频数据处理
 throttleTime + map
-ts
+``
 iot$.pipe(
   throttleTime(200),
   map(data => transform(data))
-);
+);```
 14) 🧪 后端定时任务（Cron 替代）
 interval + switchMap
-ts
+```
 interval(60000).pipe(
   switchMap(() => job.run())
 );
-
+```
 
 🧨 跨端场景（WebSocket / SSE / IoT）
 15) 📡 WebSocket + API 混合流
 combineLatest + switchMap
-ts
+```
 combined$ = combineLatest([
   ws$,
   userPref$
 ]).pipe(
   switchMap(([wsData, pref]) => api.getFiltered(wsData, pref))
 );
-
+```
 16) 📶 SSE（Server-Sent Events）
 map + shareReplay
-ts
+```
 sse$ = eventSource$.pipe(
   map(e => JSON.parse(e.data)),
   shareReplay(1)
 );
-
 ```
+
 ## rxjs for streaming
 ```
 
