@@ -106,8 +106,7 @@ of(null)	发出一个“空值”	              详情页child、可选数据、
 ## 最佳 RxJS 组合
 ```
 
-| 场景 | 操作符组合 | 含义（Plain Chinese） |
-| --- | --- | --- |
+| 场景 | 操作符组合 | 含义（Plain Chinese） | --- | --- | --- |
 | **[搜索框](ca://s?q=RxJS_搜索框_best_practice)** | **debounceTime + distinctUntilChanged + switchMap** | 等用户停下来 + 输入变化才搜 + 自动取消旧请求 |
 | **[表单自动保存](ca://s?q=RxJS_表单自动保存)** | **debounceTime + switchMap + catchError** | 防抖 + 自动保存 + 错误兜底 |
 | **[WebSocket 实时流](ca://s?q=RxJS_WebSocket_实时流)** | **throttleTime + map + shareReplay** | 限频 + 转换 + 缓存最新值 |
