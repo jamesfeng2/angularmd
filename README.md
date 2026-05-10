@@ -12,6 +12,28 @@
 - expand 自己再发出自己，让 Observable 无限或按条件递归下去
 - spread vs rest
 - Signals 是 data flowing down vs Events 是 flow up
+- 决定注入器的查找路径 @Host, @Self, @SkipSelf, and @Optional
+
+  ## 控制 DI（依赖注入）从哪里找依赖、找不到时是否报错。
+
+  | 装饰器 | 作用 | 查找方向 | 找不到时 |
+| --- | --- | --- | --- |
+| **[@Host](ca://s?q=Explain_Angular_Host)** | 只在 Host Element 的注入器找 | 停在 Host，不往上 | 报错 |
+| **[@Self](ca://s?q=Explain_Angular_Self)** | 只在当前注入器找 | 不往父级找 | 报错 |
+| **[@SkipSelf](ca://s?q=Explain_Angular_SkipSelf)** | 跳过当前，从父级开始找 | 从 parent 开始 | 报错 |
+| **[@Optional](ca://s?q=Explain_Angular_Optional)** | 找不到也不报错 | 正常查找路径 | 返回 null |
+
+```
+constructor(@Self() private logger: LoggerService) {}   // 只在当前注入器查找，不往上级查找
+constructor(@SkipSelf() private logger: LoggerService) {}   ///跳过我，从父级开始找
+constructor(@Host() private form: FormGroupDirective) {}    // 查找会在 Host Element ，不会继续往更上层
+constructor(@Optional() private parent: ParentService | null) {}   /// 找不到也别报错
+
+constructor( @Optional() @SkipSelf() private parent: MenuService | null) {}  // 可选的父级服务（最常见）组件树中允许“嵌套菜单”，但父级可能不存在
+  
+constructor( @Optional() @Host() private control: NgControl | null ) {} // 可选的宿主服务 Directive 想知道宿主是不是表单控件
+
+```
 
   ## 向上流（flow up）仍然用事件（EventEmitter / output function）
   - 子组件点击按钮 → 通知父组件
@@ -46,10 +68,10 @@
   }
  
 <child [config]="{ ...defaultConfig, ...override }">   //合并对象（常用于 Input
+
 <child [data]="{ ...user(), role: 'admin' }"></cd>
 
 <div [ngClass]="{ ...baseClasses, active: isActive() }"></di>   // class/style 合并
-
 
 @for (item of [...items()]; track item.id) {   // 复制数组避免 mutation
   <li>{{ item.name }}</li>
