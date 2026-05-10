@@ -40,7 +40,7 @@
 
 - Spread
  
-  ```
+  
     add(item) {
   this.items.update(list => [...list, item]); // Signal 数组 
   }
@@ -54,7 +54,7 @@
 @for (item of [...items()]; track item.id) {   // 复制数组避免 mutation
   <li>{{ item.name }}</li>
 
-  ```
+  
 
 - Rest
   
