@@ -19,7 +19,8 @@
     -   同名 provider 的存在，是 Angular 组件化架构的核心能力之一
     -   可覆盖（Override）父级服务
     -   
-  - @Host、@Self、@SkipSelf、@Optional = 控制 DI（依赖注入）从哪里找依赖、找不到时是否报错。  
+  - @Host、@Self、@SkipSelf、@Optional = 控制 DI（依赖注入）从哪里找依赖、找不到时是否报错。
+     
 | 装饰器 | 作用 | 查找方向 | 找不到时 |
 | --- | --- | --- | --- |
 | **[@Host](ca://s?q=Explain_Angular_Host)** | 只在 Host Element 的注入器找 | 停在 Host，不往上 | 报错 |
@@ -76,6 +77,90 @@ Root 注入器
 | **父 → 子（data down）** | **Signals** | Input 绑定也可以，但 Signals 更好 |
 | **子 → 父（flow up）** | **事件（output function）** | ❌ Signals（会破坏单向流） |
 
+- 父级管理列表，子级管理单个 item（最常见）
+
+  ```
+ parent store
+export class TodoListStore {
+  todos = signal<Todo[]>([]);
+  loading = signal(false);
+
+  load() {
+    this.loading.set(true);
+    // 模拟 API
+    setTimeout(() => {
+      this.todos.set([
+        { id: 1, text: 'Learn Angular' },
+        { id: 2, text: 'Build App' }
+      ]);
+      this.loading.set(false);
+    }, 500);
+  }
+
+  remove(id: number) {
+    this.todos.update(list => list.filter(t => t.id !== id));
+  }
+}
+
+
+父级组件
+@Component({
+  standalone: true,
+  providers: [TodoListStore],
+  template: `
+    <div *ngFor="let t of list.todos()">
+      <todo-item [todo]="t"></todo-item>
+    </div>
+  `
+})
+export class TodoListComponent {
+  constructor(public list: TodoListStore) {
+    this.list.load();
+  }
+}
+
+```
+
+```
+子级 Store（TodoItemStore）
+ 
+@Injectable()
+export class TodoItemStore {
+  todo = signal<Todo | null>(null);
+
+  setTodo(t: Todo) {
+    this.todo.set(t);
+  }
+}
+
+子级组件（同时注入父级 + 自己的 store）
+ts
+@Component({
+  standalone: true,
+  selector: 'todo-item',
+  providers: [TodoItemStore],
+  template: `
+    <div>
+      {{ store.todo()?.text }}
+      <button (click)="remove()">Remove</button>
+    </div>
+  `
+})
+export class TodoItemComponent {
+  constructor(
+    @Self() public store: TodoItemStore,               // 子级局部状态
+    @SkipSelf() private list: TodoListStore           // 父级全局状态
+  ) {}
+
+  @Input() set todo(t: Todo) {
+    this.store.setTodo(t);
+  }
+
+  remove() {
+    this.list.remove(this.store.todo()!.id);
+  }
+}
+```
 
 ## Spread on template, array, object, func param, Rest on array and object 
 
