@@ -14,19 +14,14 @@
 - Signals 是 data flowing down vs Events 是 flow up
 - 决定注入器的查找路径 @Host, @Self, @SkipSelf, and @Optional
 - await = 非阻塞线程，但阻塞当前 async 函数继续往下执行
-- 
+- Globalstore vs LocalStore
 
 
-## 
-- 它们是并列关系，不是父子关系。
+## 它们是并列关系，不是父子关系。
   - Service CRUD → GlobalStore   （全局数据）多页面共享 生命周期长 不会频繁变化 适合缓存 适合全局管理
   - Service CRUD → LocalStore    （局部数据）只属于当前页面 页面切换就应该销毁 不应该污染全局 不应该缓存 不应该共享
 
-- GlobalStore
-  - getUserProfile()
-  - getPermissions()
-  - getGlobalSettings()
-  - getDictionaries()
+- GlobalStore 不包含 UI、不包含搜索/分页/详情，只包含跨页面共享、可缓存、生命周期长的 Product Domain 数据。
 
 
 
