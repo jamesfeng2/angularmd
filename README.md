@@ -78,8 +78,8 @@ Root 注入器
 | **子 → 父（flow up）** | **事件（output function）** | ❌ Signals（会破坏单向流） |
 
 - 父级管理列表，子级管理单个 item（最常见）
-
-  ```js
+  
+  ```ts
  parent store
 export class TodoListStore {
   todos = signal<Todo[]>([]);
