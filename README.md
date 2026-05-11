@@ -13,8 +13,21 @@
 - spread vs rest
 - Signals 是 data flowing down vs Events 是 flow up
 - 决定注入器的查找路径 @Host, @Self, @SkipSelf, and @Optional
+- await = 非阻塞线程，但阻塞当前 async 函数继续往下执行
 
-  ## 控制 DI（依赖注入）从哪里找依赖、找不到时是否报错。
+
+## await 暂停当前函数，直到 Promise 完成，再继续往下执行
+  - 版本检查决定是否要清空缓存
+  - 避免加载旧数据造成 UI 错乱
+    
+```
+await versionService.checkVersion();  // 决定是否清空缓存
+this.hydrateFromCache();             // 读取缓存
+this.loadPlaylists();                // 加载数据
+this.loadVideos();
+```
+
+## 控制 DI（依赖注入）从哪里找依赖、找不到时是否报错。
   - 同时父级也可能有同名 默认情况下，子组件注入时会优先使用 自己的 provider，如果没有才会往上找。
     -   同名 provider 的存在，是 Angular 组件化架构的核心能力之一
     -   可覆盖（Override）父级服务
