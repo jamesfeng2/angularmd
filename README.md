@@ -15,8 +15,11 @@
 - 决定注入器的查找路径 @Host, @Self, @SkipSelf, and @Optional
 
   ## 控制 DI（依赖注入）从哪里找依赖、找不到时是否报错。
-  
-@Host、@Self、@SkipSelf、@Optional = 控制 DI（依赖注入）从哪里找依赖、找不到时是否报错。  
+  - 同时父级也可能有同名 默认情况下，子组件注入时会优先使用 自己的 provider，如果没有才会往上找。
+    -   同名 provider 的存在，是 Angular 组件化架构的核心能力之一
+    -   可覆盖（Override）父级服务
+    -   
+  - @Host、@Self、@SkipSelf、@Optional = 控制 DI（依赖注入）从哪里找依赖、找不到时是否报错。  
 | 装饰器 | 作用 | 查找方向 | 找不到时 |
 | --- | --- | --- | --- |
 | **[@Host](ca://s?q=Explain_Angular_Host)** | 只在 Host Element 的注入器找 | 停在 Host，不往上 | 报错 |
@@ -27,8 +30,8 @@
 
 ```
 constructor(@Self() private logger: LoggerService) {}   // 只在当前注入器查找，不往上级查找
-constructor(@SkipSelf() private logger: LoggerService) {}   ///跳过我，从父级开始找
-constructor(@Host() private form: FormGroupDirective) {}    // 查找会在 Host Element ，不会继续往更上层
+constructor(@SkipSelf() private logger: LoggerService) {}   ///跳过我，从父级开始找 我想用父级的
+constructor(@Host() private form: FormGroupDirective) {}    // 查找会在 Host Element ，不会继续往更上层 Directive 想注入宿主组件的 FormGroup
 constructor(@Optional() private parent: ParentService | null) {}   /// 找不到也别报错
 
 constructor( @Optional() @SkipSelf() private parent: MenuService | null) {}  // 可选的父级服务（最常见）组件树中允许“嵌套菜单”，但父级可能不存在
@@ -36,6 +39,25 @@ constructor( @Optional() @SkipSelf() private parent: MenuService | null) {}  // 
 constructor( @Optional() @Host() private control: NgControl | null ) {} // 可选的宿主服务 Directive 想知道宿主是不是表单控件
 
 ```
+
+- 每个 providers: [CounterStore] 的组件实例都会创建自己的 CounterStore 实例。
+- 父级一份，子级每个实例一份，互不共享、互不污染。1 parent + 3 child = 总共 4 份 CounterStore。
+- default find from当前组件的注入器 --> 父组件的注入器 --> 父父组件的注入器 -->  Module 注入器  --> 
+Root 注入器
+
+```
+ TodoListComponent
+  providers: [TodoListStore]   ← 管理整个列表 加载整个列表 分页 搜索 全选 批量删除
+    ↓
+  <todo-item> providers: [TodoItemStore]  ← 每个 item 自己的状态 编辑状态
+  <todo-item> providers: [TodoItemStore]  loading / validation
+  <todo-item> providers: [TodoItemStore]  展开/折叠
+
+```
+- 父级 CounterStore = “共享作用域状态”
+- 子级 CounterStore = “局部作用域状态”
+- 业务场景 = 需要同时存在“全局逻辑 + 局部逻辑”的 UI。
+
 
   ## 向上流（flow up）仍然用事件（EventEmitter / output function）
   - 子组件点击按钮 → 通知父组件
