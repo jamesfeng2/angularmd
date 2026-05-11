@@ -79,7 +79,7 @@ Root 注入器
 
 - 父级管理列表，子级管理单个 item（最常见）
 
-  ```
+  ```js
  parent store
 export class TodoListStore {
   todos = signal<Todo[]>([]);
@@ -121,7 +121,7 @@ export class TodoListComponent {
 
 ```
 
-```
+```ts
 子级 Store（TodoItemStore）
  
 @Injectable()
