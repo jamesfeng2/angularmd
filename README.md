@@ -70,7 +70,16 @@ Root 注入器
 ```
 - 父级 CounterStore = “共享作用域状态”
 - 子级 CounterStore = “局部作用域状态”
-- 业务场景 = 需要同时存在“全局逻辑 + 局部逻辑”的 UI。
+  - 每个页面一个独立的 Store
+  - 页面卸载时自动销毁
+  - 不污染全局
+  - 更容易测试
+  - 更容易复用   
+- 业务场景 = 需要同时存在“全局逻辑 + 局部逻辑”的 UI。如何协作？
+  -  用户修改搜索条件 → LocalStore 更新 → 自动重新搜索
+  -  用户点击“保存为默认” → 写回 GlobalStore
+  -  页面初始化时，从 GlobalStore 读取用户偏好
+  -  将偏好合并到 LocalStore 的搜索条件
 
 
   ## 向上流（flow up）仍然用事件（EventEmitter / output function）
