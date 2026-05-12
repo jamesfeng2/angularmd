@@ -25,6 +25,10 @@
 - LocalStore owns page‑level state.
 - GlobalStore owns domain‑level state.
 - LocalStore may notify GlobalStore when domain‑level data changes.
+  -   Whenever a page‑level action changes domain data CRUD, upload, not search,
+  -   Whenever domain data becomes stale.
+  -   Whenever a page anticipates domain data usage.
+  -   Whenever a page updates global preferences or permissions.
 
 
 
