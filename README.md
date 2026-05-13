@@ -15,6 +15,26 @@
 - 决定注入器的查找路径 @Host, @Self, @SkipSelf, and @Optional
 - await = 非阻塞线程，但阻塞当前 async 函数继续往下执行
 - DomainStore vs LocalStore
+- takeUntilDestroyed 只适合「组件生命周期内的长期订阅
+
+
+## 只要你在 Angular 组件里 这些订阅如果不自动停止 → 会内存泄漏 所以应该用
+
+- HTTP 长订阅（不 complete 的）
+- WebSocket
+- interval / timer
+- form.valueChanges
+- service$ 长期监听
+
+这些订阅如果不自动停止 → 会内存泄漏 所以应该用
+
+| 场景 | 用什么 |
+| --- | --- |
+| 组件内长期订阅（form、interval、websocket） | **[takeUntilDestroyed](ca://s?q=Explain_takeUntilDestroyed)** |
+| HTTP 请求（自动 complete） | ❌ 不用任何 take |
+| 只要前 N 次 | **[take](ca://s?q=Explain_RxJS_take)** |
+| 手动停止（按钮、条件） | **[takeUntil](ca://s?q=Explain_RxJS_takeUntil)** |
+| Service（root） | ❌ 不要用 takeUntilDestroyed |
 
 
 ## 它们是并列关系，不是父子关系。
