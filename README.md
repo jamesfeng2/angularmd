@@ -27,6 +27,7 @@
 | **③ 组件类** | ``@ContentChild(UserCardComponent) card!: UserCardComponent`` | 投影进来的子组件实例 | 动态表单、动态 Step | **抓投影进来的组件实例** |
 | **④ 模板变量名** | ``@ContentChild('title') titleEl!: ElementRef`` | 父组件模板变量引用 | 简单场景 | **抓父组件给的名字** |
 
+```
 父组件模板
 -----------------------------------------
 | <app-step>                             |
@@ -43,7 +44,7 @@ ContentChild(MyDirective)        → 抓指令
 ContentChild(MyComponent)        → 抓组件
 ContentChild('title')            → 抓变量
 -----------------------------------------
-
+```
  
  - ContentChild = 子组件抓父组件塞进来的内容。
  - ContentChildren = 父组件抓所有子组件
