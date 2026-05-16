@@ -19,6 +19,32 @@
 - ContenChild, ng-content, ng-container
 
  ## ContenChild, ng-content, ng-container
+
+| 抓法 | 写法 | 抓到什么 | 什么时候用 | 最 plain Chinese 解释 |
+| --- | --- | --- | --- | --- |
+| **① TemplateRef** | ``@ContentChild(TemplateRef) content!: TemplateRef<any>`` | 模板内容（ng-template） | Stepper、Tabs、Modal | **抓模板卷轴**（延迟渲染） |
+| **② 指令类** | ``@ContentChild(ScalesProjectionDirective) proj!: ScalesProjectionDirective`` | 带指令的元素/组件 | 自定义投影点、Portal | **抓带令牌的元素** |
+| **③ 组件类** | ``@ContentChild(UserCardComponent) card!: UserCardComponent`` | 投影进来的子组件实例 | 动态表单、动态 Step | **抓投影进来的组件实例** |
+| **④ 模板变量名** | ``@ContentChild('title') titleEl!: ElementRef`` | 父组件模板变量引用 | 简单场景 | **抓父组件给的名字** |
+
+父组件模板
+-----------------------------------------
+| <app-step>                             |
+|   <p>内容</p>            → TemplateRef |
+|   <div myDir>...</div>   → 指令实例     |
+|   <user-card></user-card> → 组件实例    |
+|   <h1 #title>标题</h1>    → 模板变量     |
+-----------------------------------------
+
+子组件 Step
+-----------------------------------------
+ContentChild(TemplateRef)        → 抓模板
+ContentChild(MyDirective)        → 抓指令
+ContentChild(MyComponent)        → 抓组件
+ContentChild('title')            → 抓变量
+-----------------------------------------
+
+ 
  - ContentChild = 子组件抓父组件塞进来的内容。
  - ContentChildren = 父组件抓所有子组件
  
