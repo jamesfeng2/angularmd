@@ -4,7 +4,7 @@
 - 5 case to use @HostListner
 - signal form in 5 keys features
 - xml to signals form 
-- model() model
+- model() model 
 - dto
 - rxjs for streaming
 - 最佳 RxJS 组合
@@ -20,6 +20,14 @@
 - ngTemplateOutlet = parent把 TemplateRef“渲染出来”的工具
 - TemplateRef vs ComponentRef
 - TemplateRef vs Template Variable
+- modual, modal, mode
+
+## words
+  | 英文 | 中文 | 属于 | 解释 |
+| --- | --- | --- | --- |
+| **modal** | 模态框 / 弹窗 | UI | 会挡住背景的对话框 |
+| **mode** | 模式 | 状态 | 当前系统处于哪种工作方式 | edit mode
+| **module** | 模块 | 代码结构 | Angular 的功能包、组织单元 | sharedmodul
 
 ## TemplateRef vs Template Variable
 
