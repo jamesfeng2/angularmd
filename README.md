@@ -18,7 +18,7 @@
 - takeUntilDestroyed 只适合「组件生命周期内的长期订阅
 - ContenChild, ng-content, ng-container
 
- ## 
+ ## ContenChild, ng-content, ng-container
  - ContentChild = 子组件抓父组件塞进来的内容。
  - ContentChildren = 父组件抓所有子组件
  
@@ -55,6 +55,7 @@ template: `
 export class StepperComponent {
   @ContentChildren(StepComponent) steps!: QueryList<StepComponent>;
 }
+```
 
 ```
 child  
