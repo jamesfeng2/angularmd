@@ -16,7 +16,60 @@
 - await = 非阻塞线程，但阻塞当前 async 函数继续往下执行
 - DomainStore vs LocalStore
 - takeUntilDestroyed 只适合「组件生命周期内的长期订阅
+- ContenChild, ng-content, ng-container
 
+ ## 
+ - ContentChild = 子组件抓父组件塞进来的内容。
+ - ContentChildren = 父组件抓所有子组件
+ 
+ - ng-container = 逻辑容器，不会生成 DOM，只是用来包裹结构指令
+ - ng-template == div, not in DOM
+   
+ - ViewChild → template content
+ - ContentChild：访问父组件投影进来的内容。
+ - ViewChild：访问自己模板里的内容
+
+
+```
+<app-stepper>
+  <app-step>
+    <p>第一步内容</p>
+  </app-step>
+
+  <app-step>
+    <p>第二步内容</p>
+  </app-step>
+</app-stepper>
+
+```
+```
+template: `
+    <div class="stepper">
+      <ng-container 
+        *ngIf="steps?.length"
+        [ngTemplateOutlet]="steps[0].content">
+      </ng-container>
+    </div>
+  `
+})
+export class StepperComponent {
+  @ContentChildren(StepComponent) steps!: QueryList<StepComponent>;
+}
+
+```
+child  
+  template: `
+    <ng-template>
+      <ng-content></ng-content>
+    </ng-template>
+  `
+})
+export class StepComponent {
+  // 抓住父组件塞进来的内容（<ng-content>）
+  @ContentChild(TemplateRef) content!: TemplateRef<any>;
+}
+
+```
 
 ## 只要你在 Angular 组件里 这些订阅如果不自动停止 → 会内存泄漏 所以应该用
 
