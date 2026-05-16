@@ -27,11 +27,11 @@ $implicit = 默认参数。
 其他字段 = 具名参数
 
 <ng-container 
-  [ngTemplateOutlet]="tpl"
+  [ngTemplateOutlet]="#tpl父组件塞进来的内容模板变量名"
   [ngTemplateOutletContext]="{ $implicit: user, index: 1 }">
 </ng-container>
 
-<ng-container [ngTemplateOutlet]="isEdit() ? editTpl : viewTpl"></ng-container>
+<ng-container [ngTemplateOutlet]="isEdit() ? #editTpl : #viewTpl"></ng-container>
 
 <ng-container 
   [ngTemplateOutlet]="
