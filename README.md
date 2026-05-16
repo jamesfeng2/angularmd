@@ -3,7 +3,7 @@
 - class ngclass style ngstyle 
 - 5 case to use @HostListner
 - signal form in 5 keys features
-- xml to signals form
+- xml to signals form 
 - model() model
 - dto
 - rxjs for streaming
