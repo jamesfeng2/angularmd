@@ -16,7 +16,7 @@
 - await = 非阻塞线程，但阻塞当前 async 函数继续往下执行
 - DomainStore vs LocalStore
 - takeUntilDestroyed 只适合「组件生命周期内的长期订阅
-- ContenChild, ng-content, ng-container
+- ContenChild, ng-content, ng-container, ngTemplateOutlet = parent把 TemplateRef“渲染出来”的工具
 
  ## ContenChild, ng-content, ng-container
 
@@ -58,7 +58,7 @@ ContentChild('title')            → 抓变量
 
  - ViewChild = 自己的
  - ContentChild = 送来的
-
+ - ngTemplateOutlet = parent把 TemplateRef“渲染出来”的工具
 
 ```
 <app-stepper>
