@@ -29,6 +29,9 @@
  - ContentChild：访问父组件投影进来的内容。
  - ViewChild：访问自己模板里的内容
 
+ - ViewChild = 自己的
+ - ContentChild = 送来的
+
 
 ```
 <app-stepper>
