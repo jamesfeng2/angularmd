@@ -16,7 +16,45 @@
 - await = 非阻塞线程，但阻塞当前 async 函数继续往下执行
 - DomainStore vs LocalStore
 - takeUntilDestroyed 只适合「组件生命周期内的长期订阅
-- ContenChild, ng-content, ng-container, ngTemplateOutlet = parent把 TemplateRef“渲染出来”的工具
+- ContenChild, ng-content, ng-container,
+- ngTemplateOutlet = parent把 TemplateRef“渲染出来”的工具
+
+## ngTemplateOutlet = parent把 TemplateRef“渲染出来”的工具
+
+```
+context = 给模板传参数。
+$implicit = 默认参数。
+其他字段 = 具名参数
+
+<ng-container 
+  [ngTemplateOutlet]="tpl"
+  [ngTemplateOutletContext]="{ $implicit: user, index: 1 }">
+</ng-container>
+
+<ng-container [ngTemplateOutlet]="isEdit() ? editTpl : viewTpl"></ng-container>
+
+<ng-container 
+  [ngTemplateOutlet]="
+    currentStep().valid() 
+      ? (currentStep().completed ? currentStep().completedTpl : currentStep().defaultTpl)
+      : currentStep().errorTpl
+  ">
+</ng-container>
+
+```
+
+```
+TemplateRef（模板卷轴）
+        ↓
+ngTemplateOutlet（展开卷轴）
+        ↓
+context（给卷轴传参数）
+        ↓
+动态切换（选哪一卷）
+        ↓
+多模板选择（不同状态不同卷）
+
+```
 
  ## ContenChild, ng-content, ng-container
 
