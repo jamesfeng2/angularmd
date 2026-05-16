@@ -18,6 +18,49 @@
 - takeUntilDestroyed 只适合「组件生命周期内的长期订阅
 - ContenChild, ng-content, ng-container,
 - ngTemplateOutlet = parent把 TemplateRef“渲染出来”的工具
+- TemplateRef vs ComponentRef
+- TemplateRef vs Template Variable
+
+## TemplateRef vs Template Variable
+
+| 概念 | TemplateRef | Template Variable（#var） |
+| --- | --- | --- |
+| 本质 | Angular 生成的对象 | 你起的名字（引用） |
+| 类型 | TemplateRef<T> | 没有类型（取决于引用对象） |
+| 用途 | 动态渲染、ngTemplateOutlet | 在模板里引用某个对象 |
+| 谁创建 | Angular | 你 |
+| 是否可渲染 | ✔ 可被 ngTemplateOutlet 展开 | ❌ 不能渲染（除非它引用的是 TemplateRef） |
+| 是否可复用 | ✔ 可复用 | ❌ 只是名字，不是对象 |
+| 例子 | ``<ng-template>`` | ``#tpl`` |
+
+## TemplateRef 未渲染的（UI 草稿 轻量、可复用、可切换）  ComponentRef 已实例化的组件对象（UI 实体）
+
+| 特性 | TemplateRef | ComponentRef |
+| --- | --- | --- |
+| 本质 | 模板卷轴（未渲染） | 组件实例（已渲染） |
+| 是否有 DOM | ❌ 没有 | ✔ 有 |
+| 是否有生命周期 | ❌ 没有 | ✔ 有 |
+| 是否有逻辑（methods） | ❌ 没有 | ✔ 有 |
+| 是否可多次复用 | ✔ 可以 | ❌ 不可以（每次都要 new） |
+| 渲染方式 | ngTemplateOutlet | createComponent |
+| 适用场景 | Stepper、Tabs、Modal、动态模板 | 动态组件、Portal、复杂 UI 单元 |
+| 性能 | 极轻量 | 较重 |
+
+为什么 ComponentRef 用在更复杂的动态 UI？
+- 动态表单字段（每个字段是一个组件）
+- 动态加载页面
+- 动态 Portal
+- 动态弹窗组件
+
+因为这些需要：
+- 生命周期
+- 依赖注入
+- 逻辑
+- 状态
+- 事件处理
+
+plain Chinese：
+- ComponentRef = 动态组件的最佳单位
 
 ## ngTemplateOutlet = parent把 TemplateRef“渲染出来”的工具
 
@@ -97,6 +140,9 @@ ContentChild('title')            → 抓变量
  - ViewChild = 自己的
  - ContentChild = 送来的
  - ngTemplateOutlet = parent把 TemplateRef“渲染出来”的工具
+
+ - TemplateRef = 未渲染的模板卷轴（UI 草稿）
+ - ComponentRef = 已实例化的组件对象（UI 实体）
 
 ```
 <app-stepper>
